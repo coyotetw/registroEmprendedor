@@ -330,12 +330,19 @@ RANGO_VENTAS = [
 ]
 NIVEL_INVERSION = ["Baja", "Media", "Alta"]
 NIVEL_ENDEUDAMIENTO = ["Nulo", "Bajo", "Medio", "Alto"]
+ETAPA_DESARROLLO = [
+    "Idea o proyecto (aún sin actividad)",
+    "Puesta en marcha (despegue)",
+    "Consolidación (crecimiento y expansión)",
+]
 
 # ---------------------------------------------------------------------------
 # Estado de sesión ("base" que se borra sola al reiniciar la app)
+# Se guarda como diccionario {DNI: registro} para poder completar la ficha
+# en un segundo paso sin duplicar a la persona.
 # ---------------------------------------------------------------------------
 if "registros" not in st.session_state:
-    st.session_state.registros = []
+    st.session_state.registros = {}
 
 
 def campo_completo(valor):
@@ -353,6 +360,10 @@ def val(key):
     if v == "Seleccionar...":
         return ""
     return v
+
+
+def dnis_registrados():
+    return sorted(st.session_state.registros.keys())
 
 
 # ---------------------------------------------------------------------------
@@ -392,214 +403,258 @@ st.markdown(
 )
 
 # ===========================================================================
-# SEGMENTO 1 — INSCRIPCIÓN
+# SEGMENTO 1 — INSCRIPCIÓN (registro rápido + ficha completa opcional)
 # ===========================================================================
 with tab_inscripcion:
-    st.markdown('<p class="section-eyebrow">Paso 1 de 2 · Carga</p>', unsafe_allow_html=True)
-    st.subheader("Formulario de inscripción")
-    st.caption("Los mismos campos que usa el sistema de gestión de Raíz Emprendedora.")
-
-    sub_datos, sub_trayectoria, sub_emprendimiento = st.tabs(
-        ["Datos personales", "Trayectoria emprendedora", "Emprendimiento"]
+    st.markdown('<p class="section-eyebrow">Alta de emprendedores</p>', unsafe_allow_html=True)
+    st.subheader("Inscripción en dos pasos")
+    st.caption(
+        "Paso 1: registro rápido con lo mínimo indispensable. Paso 2 (opcional, cuando la "
+        "persona tenga tiempo): completar la ficha con el resto de los datos de Raíz Emprendedora."
     )
 
-    with st.form("form_registro", clear_on_submit=False):
-
-        with sub_datos:
-            st.markdown("**1. Datos personales**")
-            st.caption("Objetivo: mantener actualizada la información de contacto y residencia.")
-            col1, col2 = st.columns(2)
-            with col1:
-                dni = st.text_input("DNI *", key="dni")
-                apellido = st.text_input("Apellido *", key="apellido")
-                email = st.text_input("Email", key="email")
-                localidad_residencia = st.selectbox(
-                    "Localidad de residencia", ["Seleccionar..."] + LOCALIDADES_CHUBUT, key="localidad_residencia"
-                )
-            with col2:
-                nombre = st.text_input("Nombre *", key="nombre")
-                fecha_nacimiento = st.date_input(
-                    "Fecha de nacimiento", value=None, min_value=date(1920, 1, 1),
-                    max_value=date.today(), key="fecha_nacimiento",
-                )
-                telefono = st.text_input("Teléfono", key="telefono")
-
-        with sub_trayectoria:
-            st.markdown("**2. Trayectoria emprendedora**")
-            st.caption("Objetivo: datos que ayudan a acompañar mejor el recorrido de la persona emprendedora.")
-            col1, col2 = st.columns(2)
-            with col1:
-                cuil = st.text_input("CUIL", key="cuil")
-                hijos = st.number_input("Hijos/as (cantidad)", min_value=0, step=1, key="hijos")
-                discapacidad = st.selectbox("¿Tiene discapacidad? *", ["Seleccionar..."] + SI_NO, key="discapacidad")
-                situacion_laboral = st.selectbox(
-                    "Situación laboral general", ["Seleccionar..."] + SITUACION_LABORAL, key="situacion_laboral"
-                )
-            with col2:
-                whatsapp_personal = st.text_input("WhatsApp", key="whatsapp_personal")
-                personas_a_cargo = st.number_input("Personas a cargo (cantidad)", min_value=0, step=1, key="personas_a_cargo")
-                nivel_educativo = st.selectbox("Nivel educativo", ["Seleccionar..."] + NIVEL_EDUCATIVO, key="nivel_educativo")
-                recibe_ingresos_extra = st.selectbox(
-                    "¿Recibe ingresos extra al emprendimiento?", ["Seleccionar..."] + SI_NO, key="recibe_ingresos_extra"
-                )
-            detalle_ingresos_extra = st.text_area("Detalle de ingresos extra", key="detalle_ingresos_extra")
-
-        with sub_emprendimiento:
-            st.markdown("**3. Emprendimiento**")
-            st.caption("Objetivo: actualizar rubro, alcance, canales y datos principales del emprendimiento.")
-
-            st.markdown("**3.1 Datos generales**")
-            nombre_emprendimiento = st.text_input("Nombre del emprendimiento *", key="nombre_emprendimiento")
-            rubros = st.multiselect("Rubros", RUBROS, key="rubros")
-            descripcion = st.text_area("Descripción", key="descripcion")
-            col1, col2 = st.columns(2)
-            with col1:
-                tipo_actividad = st.text_input("Tipo de actividad (ej: Servicios)", key="tipo_actividad")
-                alcance_territorial = st.selectbox(
-                    "Alcance territorial", ["Seleccionar..."] + ALCANCE_TERRITORIAL, key="alcance_territorial"
-                )
-            with col2:
-                antiguedad = st.selectbox("Antigüedad del emprendimiento", ["Seleccionar..."] + ANTIGUEDAD, key="antiguedad")
-                localidades_alcance = st.multiselect("Localidades de alcance", LOCALIDADES_CHUBUT, key="localidades_alcance")
-
-            st.markdown("---")
-            st.markdown("**3.2 Formalización y aspectos fiscales**")
-            col1, col2 = st.columns(2)
-            with col1:
-                personas_involucradas = st.selectbox(
-                    "Personas involucradas en el emprendimiento", ["Seleccionar..."] + PERSONAS_INVOLUCRADAS, key="personas_involucradas"
-                )
-                figura_impositiva = st.selectbox("Figura impositiva", ["Seleccionar..."] + FIGURA_IMPOSITIVA, key="figura_impositiva")
-                barrera_formalizacion = st.selectbox(
-                    "Barrera de formalización", ["Seleccionar..."] + BARRERA_FORMALIZACION, key="barrera_formalizacion"
-                )
-            with col2:
-                situacion_fiscal = st.selectbox("Situación fiscal (¿está inscripto/a?)", ["Seleccionar..."] + SI_NO, key="situacion_fiscal")
-                estado_formalizacion = st.text_input("Estado de formalización (ej: Monotributo)", key="estado_formalizacion")
-                emision_facturas = st.selectbox("Emisión de facturas", ["Seleccionar..."] + EMISION_FACTURAS, key="emision_facturas")
-            acceso_regimenes = st.text_area("Acceso a regímenes", key="acceso_regimenes")
-            barreras_formalizacion_detalle = st.text_area("Barreras de formalización (detalle)", key="barreras_formalizacion_detalle")
-
-            st.markdown("---")
-            st.markdown("**3.3 Comunicación y digitalización**")
-            col1, col2 = st.columns(2)
-            with col1:
-                usa_redes = st.selectbox("¿Usa redes sociales?", ["Seleccionar..."] + SI_NO, key="usa_redes")
-                telefono_negocio = st.text_input("Teléfono del negocio", key="telefono_negocio")
-                whatsapp_business = st.selectbox("WhatsApp Business", ["Seleccionar..."] + SI_NO_DESC, key="whatsapp_business")
-                marca_activa_redes = st.selectbox(
-                    "¿La marca tiene actividad activa en redes?", ["Seleccionar..."] + SI_NO_DESC, key="marca_activa_redes"
-                )
-                cuentas_comerciales = st.selectbox("¿Cuenta con cuentas comerciales?", ["Seleccionar..."] + SI_NO, key="cuentas_comerciales")
-            with col2:
-                canales_venta = st.multiselect("Canales de venta utilizados", CANALES_VENTA, key="canales_venta")
-                telefono_distinto = st.selectbox(
-                    "¿Tiene teléfono de negocio distinto al personal?", ["Seleccionar..."] + SI_NO, key="telefono_distinto"
-                )
-                usa_ia = st.selectbox("¿Usa inteligencia artificial?", ["Seleccionar..."] + SI_NO_DESC, key="usa_ia")
-                nivel_digitalizacion = st.selectbox(
-                    "Nivel de digitalización", ["Seleccionar..."] + NIVEL_DIGITALIZACION, key="nivel_digitalizacion"
-                )
-                alcance_mercado = st.selectbox("Alcance de mercado", ["Seleccionar..."] + ALCANCE_TERRITORIAL, key="alcance_mercado")
-            medios_cobro = st.text_area("Medios de cobro", key="medios_cobro")
-            col1, col2 = st.columns(2)
-            with col1:
-                whatsapp_emprendimiento = st.text_input("WhatsApp del emprendimiento", key="whatsapp_emprendimiento")
-                instagram = st.text_input("Instagram", key="instagram")
-                tiktok = st.text_input("TikTok", key="tiktok")
-            with col2:
-                facebook = st.text_input("Facebook", key="facebook")
-                linkedin = st.text_input("LinkedIn", key="linkedin")
-                otra_red = st.text_input("Otra red social", key="otra_red")
-
-            st.markdown("---")
-            st.markdown("**3.4 Situación financiera**")
-            col1, col2 = st.columns(2)
-            with col1:
-                credito_previo = st.selectbox("¿Tuvo acceso a crédito previo?", ["Seleccionar..."] + SI_NO, key="credito_previo")
-                nivel_conocimiento_financiero = st.selectbox(
-                    "Nivel de conocimiento financiero", ["Seleccionar..."] + NIVEL_CONOCIMIENTO_FINANCIERO, key="nivel_conocimiento_financiero"
-                )
-                nivel_inversion = st.selectbox("Nivel de inversión inicial", ["Seleccionar..."] + NIVEL_INVERSION, key="nivel_inversion")
-            with col2:
-                financiamiento_estado = st.selectbox(
-                    "¿Tuvo acceso a financiamiento del Estado?", ["Seleccionar..."] + SI_NO, key="financiamiento_estado"
-                )
-                rango_ventas = st.selectbox("Rango de ventas mensuales", ["Seleccionar..."] + RANGO_VENTAS, key="rango_ventas")
-                nivel_endeudamiento = st.selectbox("Nivel de endeudamiento", ["Seleccionar..."] + NIVEL_ENDEUDAMIENTO, key="nivel_endeudamiento")
-            necesidades_financiamiento = st.text_area("Necesidades de financiamiento", key="necesidades_financiamiento")
-
-        st.markdown("&nbsp;", unsafe_allow_html=True)
-        enviado = st.form_submit_button("Registrarme", use_container_width=True)
+    sub_rapido, sub_completar = st.tabs(["Paso 1 · Registro rápido (obligatorio)", "Paso 2 · Completar ficha (opcional)"])
 
     # -----------------------------------------------------------------------
-    # Procesamiento del envío
+    # PASO 1 — Registro rápido: solo los campos obligatorios
     # -----------------------------------------------------------------------
-    if enviado:
-        obligatorios = {
-            "DNI": st.session_state.dni,
-            "Nombre": st.session_state.nombre,
-            "Apellido": st.session_state.apellido,
-            "¿Tiene discapacidad?": None if st.session_state.discapacidad == "Seleccionar..." else st.session_state.discapacidad,
-            "Nombre del emprendimiento": st.session_state.nombre_emprendimiento,
-        }
-        faltantes = [campo for campo, valor in obligatorios.items() if not campo_completo(valor)]
+    with sub_rapido:
+        st.caption(
+            "Con esto ya queda inscripto/a en el registro. Los datos de trayectoria y del "
+            "emprendimiento se pueden completar después, en \"Paso 2\"."
+        )
+        with st.form("form_registro_rapido", clear_on_submit=False):
+            col1, col2 = st.columns(2)
+            with col1:
+                dni_r = st.text_input("DNI *", key="dni_rapido")
+                apellido_r = st.text_input("Apellido *", key="apellido_rapido")
+                discapacidad_r = st.selectbox("¿Tiene discapacidad? *", ["Seleccionar..."] + SI_NO, key="discapacidad_rapido")
+            with col2:
+                nombre_r = st.text_input("Nombre *", key="nombre_rapido")
+                nombre_emprendimiento_r = st.text_input("Nombre del emprendimiento *", key="nombre_emprendimiento_rapido")
+            st.markdown("&nbsp;", unsafe_allow_html=True)
+            enviado_rapido = st.form_submit_button("Registrarme", use_container_width=True)
 
-        if faltantes:
-            st.error("Faltan completar campos obligatorios: " + ", ".join(faltantes))
-        else:
-            registro = {
-                "Fecha de registro": datetime.now().strftime("%d/%m/%Y %H:%M"),
-                # 1. Datos personales
-                "DNI": val("dni"), "Nombre": val("nombre"), "Apellido": val("apellido"),
-                "Fecha de nacimiento": str(val("fecha_nacimiento") or ""), "Email": val("email"),
-                "Teléfono": val("telefono"), "Localidad de residencia": val("localidad_residencia"),
-                # 2. Trayectoria emprendedora
-                "CUIL": val("cuil"), "WhatsApp": val("whatsapp_personal"),
-                "Hijos/as": val("hijos"), "Personas a cargo": val("personas_a_cargo"),
-                "¿Tiene discapacidad?": val("discapacidad"), "Nivel educativo": val("nivel_educativo"),
-                "Situación laboral": val("situacion_laboral"),
-                "¿Recibe ingresos extra?": val("recibe_ingresos_extra"),
-                "Detalle ingresos extra": val("detalle_ingresos_extra"),
-                # 3.1 Emprendimiento - datos generales
-                "Nombre del emprendimiento": val("nombre_emprendimiento"),
-                "Rubros": ", ".join(val("rubros") or []),
-                "Descripción": val("descripcion"), "Tipo de actividad": val("tipo_actividad"),
-                "Antigüedad": val("antiguedad"), "Alcance territorial": val("alcance_territorial"),
-                "Localidades de alcance": ", ".join(val("localidades_alcance") or []),
-                # 3.2 Formalización y fiscal
-                "Personas involucradas": val("personas_involucradas"),
-                "Situación fiscal": val("situacion_fiscal"), "Figura impositiva": val("figura_impositiva"),
-                "Estado de formalización": val("estado_formalizacion"),
-                "Acceso a regímenes": val("acceso_regimenes"),
-                "Barrera de formalización": val("barrera_formalizacion"),
-                "Barreras de formalización (detalle)": val("barreras_formalizacion_detalle"),
-                "Emisión de facturas": val("emision_facturas"),
-                # 3.3 Comunicación y digitalización
-                "¿Usa redes sociales?": val("usa_redes"),
-                "Canales de venta": ", ".join(val("canales_venta") or []),
-                "Medios de cobro": val("medios_cobro"), "Teléfono del negocio": val("telefono_negocio"),
-                "Tel. negocio distinto": val("telefono_distinto"), "WhatsApp Business": val("whatsapp_business"),
-                "¿Usa IA?": val("usa_ia"), "Marca activa en redes": val("marca_activa_redes"),
-                "Nivel de digitalización": val("nivel_digitalizacion"),
-                "WhatsApp del emprendimiento": val("whatsapp_emprendimiento"),
-                "Instagram": val("instagram"), "Facebook": val("facebook"), "TikTok": val("tiktok"),
-                "LinkedIn": val("linkedin"), "Otra red social": val("otra_red"),
-                "¿Cuentas comerciales?": val("cuentas_comerciales"), "Alcance de mercado": val("alcance_mercado"),
-                # 3.4 Situación financiera
-                "¿Crédito previo?": val("credito_previo"), "¿Financiamiento del Estado?": val("financiamiento_estado"),
-                "Nivel conocimiento financiero": val("nivel_conocimiento_financiero"),
-                "Rango de ventas mensuales": val("rango_ventas"),
-                "Necesidades de financiamiento": val("necesidades_financiamiento"),
-                "Nivel de inversión inicial": val("nivel_inversion"),
-                "Nivel de endeudamiento": val("nivel_endeudamiento"),
+        if enviado_rapido:
+            obligatorios = {
+                "DNI": st.session_state.dni_rapido,
+                "Nombre": st.session_state.nombre_rapido,
+                "Apellido": st.session_state.apellido_rapido,
+                "¿Tiene discapacidad?": None if st.session_state.discapacidad_rapido == "Seleccionar..." else st.session_state.discapacidad_rapido,
+                "Nombre del emprendimiento": st.session_state.nombre_emprendimiento_rapido,
             }
-            st.session_state.registros.append(registro)
-            st.success(
-                f"¡Listo, {val('nombre')}! Tu emprendimiento **{val('nombre_emprendimiento')}** "
-                "quedó cargado en el registro (demo)."
+            faltantes = [campo for campo, valor in obligatorios.items() if not campo_completo(valor)]
+            if faltantes:
+                st.error("Faltan completar campos obligatorios: " + ", ".join(faltantes))
+            else:
+                dni_key = st.session_state.dni_rapido.strip()
+                registro_previo = st.session_state.registros.get(dni_key, {})
+                registro_previo.update({
+                    "Fecha de registro": registro_previo.get("Fecha de registro") or datetime.now().strftime("%d/%m/%Y %H:%M"),
+                    "DNI": dni_key,
+                    "Nombre": val("nombre_rapido"),
+                    "Apellido": val("apellido_rapido"),
+                    "¿Tiene discapacidad?": val("discapacidad_rapido"),
+                    "Nombre del emprendimiento": val("nombre_emprendimiento_rapido"),
+                    "Ficha completa": registro_previo.get("Ficha completa", "No"),
+                })
+                st.session_state.registros[dni_key] = registro_previo
+                st.success(
+                    f"¡Listo, {val('nombre_rapido')}! Tu emprendimiento **{val('nombre_emprendimiento_rapido')}** "
+                    "quedó inscripto (demo). Cuando puedas, completá la ficha en \"Paso 2\"."
+                )
+                st.balloons()
+
+    # -----------------------------------------------------------------------
+    # PASO 2 — Completar ficha: el resto de los campos, opcional
+    # -----------------------------------------------------------------------
+    with sub_completar:
+        if not dnis_registrados():
+            st.info("Todavía no hay nadie inscripto/a. Registrate primero en \"Paso 1\".")
+        else:
+            st.caption("Elegí el DNI ya inscripto y completá el resto de los datos cuando quieras.")
+            dni_elegido = st.selectbox(
+                "DNI a completar",
+                dnis_registrados(),
+                format_func=lambda d: f"{d} — {st.session_state.registros[d].get('Nombre', '')} "
+                                       f"{st.session_state.registros[d].get('Apellido', '')}",
+                key="dni_a_completar",
             )
-            st.balloons()
+
+            sub_datos, sub_trayectoria, sub_emprendimiento = st.tabs(
+                ["Datos personales", "Trayectoria emprendedora", "Emprendimiento"]
+            )
+
+            with st.form("form_completar_ficha", clear_on_submit=False):
+
+                with sub_datos:
+                    st.markdown("**1. Datos personales (complemento)**")
+                    st.caption("Objetivo: mantener actualizada la información de contacto y residencia.")
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        email = st.text_input("Email", key="email")
+                        localidad_residencia = st.selectbox(
+                            "Localidad de residencia", ["Seleccionar..."] + LOCALIDADES_CHUBUT, key="localidad_residencia"
+                        )
+                    with col2:
+                        fecha_nacimiento = st.date_input(
+                            "Fecha de nacimiento", value=None, min_value=date(1920, 1, 1),
+                            max_value=date.today(), key="fecha_nacimiento",
+                        )
+                        telefono = st.text_input("Teléfono", key="telefono")
+
+                with sub_trayectoria:
+                    st.markdown("**2. Trayectoria emprendedora**")
+                    st.caption("Objetivo: datos que ayudan a acompañar mejor el recorrido de la persona emprendedora.")
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        cuil = st.text_input("CUIL", key="cuil")
+                        hijos = st.number_input("Hijos/as (cantidad)", min_value=0, step=1, key="hijos")
+                        situacion_laboral = st.selectbox(
+                            "Situación laboral general", ["Seleccionar..."] + SITUACION_LABORAL, key="situacion_laboral"
+                        )
+                    with col2:
+                        whatsapp_personal = st.text_input("WhatsApp", key="whatsapp_personal")
+                        personas_a_cargo = st.number_input("Personas a cargo (cantidad)", min_value=0, step=1, key="personas_a_cargo")
+                        nivel_educativo = st.selectbox("Nivel educativo", ["Seleccionar..."] + NIVEL_EDUCATIVO, key="nivel_educativo")
+                        recibe_ingresos_extra = st.selectbox(
+                            "¿Recibe ingresos extra al emprendimiento?", ["Seleccionar..."] + SI_NO, key="recibe_ingresos_extra"
+                        )
+                    detalle_ingresos_extra = st.text_area("Detalle de ingresos extra", key="detalle_ingresos_extra")
+
+                with sub_emprendimiento:
+                    st.markdown("**3. Emprendimiento**")
+                    st.caption("Objetivo: actualizar rubro, alcance, canales y datos principales del emprendimiento.")
+
+                    st.markdown("**3.1 Datos generales**")
+                    rubros = st.multiselect("Rubros", RUBROS, key="rubros")
+                    descripcion = st.text_area("Descripción", key="descripcion")
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        tipo_actividad = st.text_input("Tipo de actividad (ej: Servicios)", key="tipo_actividad")
+                        alcance_territorial = st.selectbox(
+                            "Alcance territorial", ["Seleccionar..."] + ALCANCE_TERRITORIAL, key="alcance_territorial"
+                        )
+                        etapa_desarrollo = st.selectbox(
+                            "Etapa de desarrollo", ["Seleccionar..."] + ETAPA_DESARROLLO, key="etapa_desarrollo"
+                        )
+                    with col2:
+                        antiguedad = st.selectbox("Antigüedad del emprendimiento", ["Seleccionar..."] + ANTIGUEDAD, key="antiguedad")
+                        localidades_alcance = st.multiselect("Localidades de alcance", LOCALIDADES_CHUBUT, key="localidades_alcance")
+
+                    st.markdown("---")
+                    st.markdown("**3.2 Formalización y aspectos fiscales**")
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        personas_involucradas = st.selectbox(
+                            "Personas involucradas en el emprendimiento", ["Seleccionar..."] + PERSONAS_INVOLUCRADAS, key="personas_involucradas"
+                        )
+                        figura_impositiva = st.selectbox("Figura impositiva", ["Seleccionar..."] + FIGURA_IMPOSITIVA, key="figura_impositiva")
+                        barrera_formalizacion = st.selectbox(
+                            "Barrera de formalización", ["Seleccionar..."] + BARRERA_FORMALIZACION, key="barrera_formalizacion"
+                        )
+                    with col2:
+                        situacion_fiscal = st.selectbox("Situación fiscal (¿está inscripto/a?)", ["Seleccionar..."] + SI_NO, key="situacion_fiscal")
+                        estado_formalizacion = st.text_input("Estado de formalización (ej: Monotributo)", key="estado_formalizacion")
+                        emision_facturas = st.selectbox("Emisión de facturas", ["Seleccionar..."] + EMISION_FACTURAS, key="emision_facturas")
+                    acceso_regimenes = st.text_area("Acceso a regímenes", key="acceso_regimenes")
+                    barreras_formalizacion_detalle = st.text_area("Barreras de formalización (detalle)", key="barreras_formalizacion_detalle")
+
+                    st.markdown("---")
+                    st.markdown("**3.3 Comunicación y digitalización**")
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        usa_redes = st.selectbox("¿Usa redes sociales?", ["Seleccionar..."] + SI_NO, key="usa_redes")
+                        telefono_negocio = st.text_input("Teléfono del negocio", key="telefono_negocio")
+                        whatsapp_business = st.selectbox("WhatsApp Business", ["Seleccionar..."] + SI_NO_DESC, key="whatsapp_business")
+                        marca_activa_redes = st.selectbox(
+                            "¿La marca tiene actividad activa en redes?", ["Seleccionar..."] + SI_NO_DESC, key="marca_activa_redes"
+                        )
+                        cuentas_comerciales = st.selectbox("¿Cuenta con cuentas comerciales?", ["Seleccionar..."] + SI_NO, key="cuentas_comerciales")
+                    with col2:
+                        canales_venta = st.multiselect("Canales de venta utilizados", CANALES_VENTA, key="canales_venta")
+                        telefono_distinto = st.selectbox(
+                            "¿Tiene teléfono de negocio distinto al personal?", ["Seleccionar..."] + SI_NO, key="telefono_distinto"
+                        )
+                        usa_ia = st.selectbox("¿Usa inteligencia artificial?", ["Seleccionar..."] + SI_NO_DESC, key="usa_ia")
+                        nivel_digitalizacion = st.selectbox(
+                            "Nivel de digitalización", ["Seleccionar..."] + NIVEL_DIGITALIZACION, key="nivel_digitalizacion"
+                        )
+                        alcance_mercado = st.selectbox("Alcance de mercado", ["Seleccionar..."] + ALCANCE_TERRITORIAL, key="alcance_mercado")
+                    medios_cobro = st.text_area("Medios de cobro", key="medios_cobro")
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        whatsapp_emprendimiento = st.text_input("WhatsApp del emprendimiento", key="whatsapp_emprendimiento")
+                        instagram = st.text_input("Instagram", key="instagram")
+                        tiktok = st.text_input("TikTok", key="tiktok")
+                    with col2:
+                        facebook = st.text_input("Facebook", key="facebook")
+                        linkedin = st.text_input("LinkedIn", key="linkedin")
+                        otra_red = st.text_input("Otra red social", key="otra_red")
+
+                    st.markdown("---")
+                    st.markdown("**3.4 Situación financiera**")
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        credito_previo = st.selectbox("¿Tuvo acceso a crédito previo?", ["Seleccionar..."] + SI_NO, key="credito_previo")
+                        nivel_conocimiento_financiero = st.selectbox(
+                            "Nivel de conocimiento financiero", ["Seleccionar..."] + NIVEL_CONOCIMIENTO_FINANCIERO, key="nivel_conocimiento_financiero"
+                        )
+                        nivel_inversion = st.selectbox("Nivel de inversión inicial", ["Seleccionar..."] + NIVEL_INVERSION, key="nivel_inversion")
+                    with col2:
+                        financiamiento_estado = st.selectbox(
+                            "¿Tuvo acceso a financiamiento del Estado?", ["Seleccionar..."] + SI_NO, key="financiamiento_estado"
+                        )
+                        rango_ventas = st.selectbox("Rango de ventas mensuales", ["Seleccionar..."] + RANGO_VENTAS, key="rango_ventas")
+                        nivel_endeudamiento = st.selectbox("Nivel de endeudamiento", ["Seleccionar..."] + NIVEL_ENDEUDAMIENTO, key="nivel_endeudamiento")
+                    necesidades_financiamiento = st.text_area("Necesidades de financiamiento", key="necesidades_financiamiento")
+
+                st.markdown("&nbsp;", unsafe_allow_html=True)
+                enviado_completo = st.form_submit_button("Guardar ficha completa", use_container_width=True)
+
+            if enviado_completo:
+                registro = st.session_state.registros[dni_elegido]
+                registro.update({
+                    "Email": val("email"), "Localidad de residencia": val("localidad_residencia"),
+                    "Fecha de nacimiento": str(val("fecha_nacimiento") or ""), "Teléfono": val("telefono"),
+                    "CUIL": val("cuil"), "WhatsApp": val("whatsapp_personal"),
+                    "Hijos/as": val("hijos"), "Personas a cargo": val("personas_a_cargo"),
+                    "Nivel educativo": val("nivel_educativo"), "Situación laboral": val("situacion_laboral"),
+                    "¿Recibe ingresos extra?": val("recibe_ingresos_extra"),
+                    "Detalle ingresos extra": val("detalle_ingresos_extra"),
+                    "Rubros": ", ".join(val("rubros") or []),
+                    "Descripción": val("descripcion"), "Tipo de actividad": val("tipo_actividad"),
+                    "Etapa de desarrollo": val("etapa_desarrollo"),
+                    "Antigüedad": val("antiguedad"), "Alcance territorial": val("alcance_territorial"),
+                    "Localidades de alcance": ", ".join(val("localidades_alcance") or []),
+                    "Personas involucradas": val("personas_involucradas"),
+                    "Situación fiscal": val("situacion_fiscal"), "Figura impositiva": val("figura_impositiva"),
+                    "Estado de formalización": val("estado_formalizacion"),
+                    "Acceso a regímenes": val("acceso_regimenes"),
+                    "Barrera de formalización": val("barrera_formalizacion"),
+                    "Barreras de formalización (detalle)": val("barreras_formalizacion_detalle"),
+                    "Emisión de facturas": val("emision_facturas"),
+                    "¿Usa redes sociales?": val("usa_redes"),
+                    "Canales de venta": ", ".join(val("canales_venta") or []),
+                    "Medios de cobro": val("medios_cobro"), "Teléfono del negocio": val("telefono_negocio"),
+                    "Tel. negocio distinto": val("telefono_distinto"), "WhatsApp Business": val("whatsapp_business"),
+                    "¿Usa IA?": val("usa_ia"), "Marca activa en redes": val("marca_activa_redes"),
+                    "Nivel de digitalización": val("nivel_digitalizacion"),
+                    "WhatsApp del emprendimiento": val("whatsapp_emprendimiento"),
+                    "Instagram": val("instagram"), "Facebook": val("facebook"), "TikTok": val("tiktok"),
+                    "LinkedIn": val("linkedin"), "Otra red social": val("otra_red"),
+                    "¿Cuentas comerciales?": val("cuentas_comerciales"), "Alcance de mercado": val("alcance_mercado"),
+                    "¿Crédito previo?": val("credito_previo"), "¿Financiamiento del Estado?": val("financiamiento_estado"),
+                    "Nivel conocimiento financiero": val("nivel_conocimiento_financiero"),
+                    "Rango de ventas mensuales": val("rango_ventas"),
+                    "Necesidades de financiamiento": val("necesidades_financiamiento"),
+                    "Nivel de inversión inicial": val("nivel_inversion"),
+                    "Nivel de endeudamiento": val("nivel_endeudamiento"),
+                    "Ficha completa": "Sí",
+                })
+                st.session_state.registros[dni_elegido] = registro
+                st.success(f"Ficha de {registro.get('Nombre', '')} {registro.get('Apellido', '')} actualizada (demo).")
+                st.balloons()
 
 # ===========================================================================
 # SEGMENTO 2 — BASE DE DATOS
@@ -613,7 +668,9 @@ with tab_base_datos:
         "para el simulacro."
     )
     if st.session_state.registros:
-        df = pd.DataFrame(st.session_state.registros)
+        df = pd.DataFrame(list(st.session_state.registros.values()))
+        completas = (df["Ficha completa"] == "Sí").sum() if "Ficha completa" in df else 0
+        st.caption(f"{len(df)} persona(s) inscripta(s) · {completas} con ficha completa · {len(df) - completas} solo con el registro rápido.")
         st.dataframe(df, use_container_width=True)
 
         buffer = io.BytesIO()
@@ -629,7 +686,7 @@ with tab_base_datos:
             )
         with col_b:
             if st.button("Vaciar base ahora", use_container_width=True):
-                st.session_state.registros = []
+                st.session_state.registros = {}
                 st.rerun()
     else:
         st.info("Todavía no hay registros cargados en esta sesión. Cargá uno en \"01 · Inscripción\".")
@@ -653,6 +710,7 @@ with tab_ejemplo:
                 <div><div class="kv-label">Emprendimiento</div><div class="kv-value">Tejidos del Sur — indumentaria y accesorios en lana patagónica</div></div>
                 <div><div class="kv-label">Rubro</div><div class="kv-value">Textil, indumentaria y accesorios</div></div>
                 <div><div class="kv-label">Antigüedad</div><div class="kv-value">Entre 1 y 5 años</div></div>
+                <div><div class="kv-label">Etapa de desarrollo</div><div class="kv-value">Consolidación (crecimiento y expansión)</div></div>
                 <div><div class="kv-label">Alcance</div><div class="kv-value">Regional</div></div>
                 <div><div class="kv-label">Formalización</div><div class="kv-value">Monotributo (Responsable Inscripto en trámite)</div></div>
                 <div><div class="kv-label">Emisión de facturas</div><div class="kv-value">A veces</div></div>
@@ -805,22 +863,28 @@ with tab_metodologia:
     st.markdown("#### Diagnóstico automático de esta sesión")
 
     if st.session_state.registros:
-        df = pd.DataFrame(st.session_state.registros)
+        df = pd.DataFrame(list(st.session_state.registros.values()))
         st.caption(f"Calculado sobre los {len(df)} registro(s) cargado(s) en \"01 · Inscripción\".")
+
+        def columna_o_vacia(nombre):
+            if nombre in df.columns:
+                return df[nombre].fillna("").replace("", "Sin dato (ficha no completada)")
+            return pd.Series(["Sin dato (ficha no completada)"] * len(df))
 
         col1, col2 = st.columns(2)
         with col1:
             st.markdown("**Por localidad de residencia**")
-            conteo_localidad = df["Localidad de residencia"].replace("", "Sin dato").value_counts()
-            st.bar_chart(conteo_localidad, color="#D9691D")
+            st.bar_chart(columna_o_vacia("Localidad de residencia").value_counts(), color="#D9691D")
         with col2:
             st.markdown("**Por nivel de digitalización**")
-            conteo_digital = df["Nivel de digitalización"].replace("", "Sin dato").value_counts()
-            st.bar_chart(conteo_digital, color="#0F7A73")
+            st.bar_chart(columna_o_vacia("Nivel de digitalización").value_counts(), color="#0F7A73")
 
         st.markdown("**Por figura impositiva**")
-        conteo_fiscal = df["Figura impositiva"].replace("", "Sin dato").value_counts()
-        st.bar_chart(conteo_fiscal, color="#211C16")
+        st.bar_chart(columna_o_vacia("Figura impositiva").value_counts(), color="#211C16")
+        st.caption(
+            "\"Sin dato (ficha no completada)\" indica personas que hicieron solo el registro "
+            "rápido — todavía no pasaron por \"Paso 2 · Completar ficha\"."
+        )
     else:
         st.info(
             "Todavía no hay registros cargados en esta sesión — cargá al menos uno en "
