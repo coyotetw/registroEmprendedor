@@ -702,8 +702,9 @@ with tab_otras_provincias:
     st.markdown('<p class="section-eyebrow">Relevamiento normativo</p>', unsafe_allow_html=True)
     st.subheader("Cómo lo resuelven otras provincias")
     st.caption(
-        "Síntesis del relevamiento de registros y leyes de emprendedurismo en Argentina — "
-        "insumo para diseñar el marco legal del registro provincial de Chubut."
+        "Síntesis del relevamiento de registros y leyes de emprendedurismo en Argentina. No se "
+        "mira solo la posibilidad de financiar al emprendedor, sino también de capacitarlo y "
+        "acompañarlo — insumo para diseñar el marco legal del registro provincial de Chubut."
     )
 
     df_provincias = pd.DataFrame(
@@ -737,35 +738,66 @@ with tab_otras_provincias:
                                         "para acceder al crédito.",
             },
             {
+                "Provincia": "San Luis",
+                "Norma": "Resoluciones del Ministerio de Desarrollo Productivo (sin ley específica)",
+                "Qué crea": "Registro de Emprendedores, Artesanos y Pequeños Productores + paquete de 18 "
+                            "instrumentos: \"Mi Próximo Paso\" (crédito hasta $4M), \"Mi Primer Emprendimiento\" "
+                            "(jóvenes 18-30), \"Eco-Emprende\" (triple impacto) y la plataforma \"Compre San Luis\".",
+                "Por qué es relevante": "El modelo con más peso en capacitación y acompañamiento, no solo "
+                                        "crédito: exige un ciclo formativo obligatorio antes de financiar "
+                                        "(\"rechazo al financiamiento ciego\"), con más de 15.800 visitas de "
+                                        "seguimiento en territorio (>90% de los proyectos financiados en 2025) "
+                                        "y la Universidad de La Punta como aceleradora institucional. Creció "
+                                        "486,9% en proyectos financiados entre 2024 y 2025.",
+            },
+            {
                 "Provincia": "Chubut",
                 "Norma": "Sin ley específica",
                 "Qué crea": "Programas administrativos: \"Raíz Emprendedora\" (Secretaría General de Gobierno) "
                             "y \"Chubut Emprende\" (Secretaría de Trabajo)",
                 "Por qué es relevante": "Vacío institucional a resolver — este registro es un primer paso "
-                                        "hacia un marco formal similar al de Mendoza.",
+                                        "hacia un marco formal similar al de Mendoza, sumando la capacitación "
+                                        "y el acompañamiento territorial que muestra San Luis.",
             },
         ]
     )
     st.dataframe(df_provincias, use_container_width=True, hide_index=True)
 
-    st.markdown(
-        """
-        <div class="callout">
-            <p class="section-eyebrow">Caso destacado</p>
-            <p style="margin:0 0 6px 0;"><b>Erisea (Chubut)</b> ganó la categoría "Crecimiento y Expansión" del
-            Concurso Nacional Emprendimiento Argentino 2025, frente a 801 emprendimientos presentados de
-            todo el país.</p>
-            <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">Chubut ya tiene talento
-            emprendedor de nivel nacional — lo que falta es la arquitectura institucional (registro +
-            dirección + ley) que provincias como Mendoza ya consolidaron.</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    col_caso, col_compre = st.columns(2)
+    with col_caso:
+        st.markdown(
+            """
+            <div class="callout">
+                <p class="section-eyebrow">Caso destacado</p>
+                <p style="margin:0 0 6px 0;"><b>Erisea (Chubut)</b> ganó la categoría "Crecimiento y Expansión"
+                del Concurso Nacional Emprendimiento Argentino 2025, frente a 801 emprendimientos
+                presentados de todo el país.</p>
+                <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">Chubut ya tiene talento
+                emprendedor de nivel nacional — lo que falta es la arquitectura institucional (registro +
+                dirección + ley) que provincias como Mendoza ya consolidaron.</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    with col_compre:
+        st.markdown(
+            """
+            <div class="callout">
+                <p class="section-eyebrow">Compre local</p>
+                <p style="margin:0 0 6px 0;"><b>"Compre San Luis"</b> es una red oficial de vinculación
+                comercial que conecta emprendedores, empresas y proveedores (26.202 actores integrados),
+                para que el crédito y la capacitación se traduzcan en ventas reales dentro de la provincia.</p>
+                <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">Chubut ya tiene un antecedente
+                propio en "Compre Chubut" — el registro sería la base de datos natural para darle escala y
+                conectar la demanda pública/privada local con los emprendimientos ya inscriptos.</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
     st.caption(
-        "Fuente: relevamiento normativo propio sobre Boletines Oficiales provinciales y "
-        "argentina.gob.ar (septiembre 2026). Verificar textos consolidados antes de citarlos "
-        "en un documento normativo definitivo."
+        "Fuente: relevamiento normativo propio sobre Boletines Oficiales y sitios oficiales "
+        "provinciales, y relevamiento del ecosistema emprendedor de San Luis (septiembre 2026). "
+        "Verificar textos y cifras vigentes antes de citarlos en un documento normativo definitivo."
     )
 
 # ===========================================================================
