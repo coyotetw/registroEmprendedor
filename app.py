@@ -784,8 +784,6 @@ with tab_programas:
          "sería su base de datos formal, hoy dispersa en planillas."),
         ("Chubut Emprende", "Aporte reintegrable de la Secretaría de Trabajo (hasta $5.000.000). El registro "
          "permite segmentar a quién ofrecérselo primero."),
-        ("Emprendimiento Argentino (línea de crédito nacional)", "Créditos de $10-50M al 25% TNA a 5 años. "
-         "Requiere Certificado MiPyME y aval de una incubadora — el registro ayuda a preparar esa documentación."),
         ("Chubut Potencia", "Capacitaciones gratuitas del Ministerio de Producción y la Secretaría de Ciencia y "
          "Tecnología, en convenio con CAME, con un primer eje específico de emprendedurismo (modelos de negocio, "
          "comercialización, marketing digital, gestión). El registro permite convocar directamente a quienes "
@@ -801,6 +799,11 @@ with tab_programas:
          "quinta provincia en sumarse) con trayectos en gestión de emprendimientos, atención al cliente, "
          "programación y automatización, más acceso a la plataforma Capacitar (500+ cursos gratuitos). El "
          "registro permite orientar a cada emprendedor/a al trayecto que le falta."),
+        ("Concurso Emprendimiento Argentino", "Ejemplo de cómo el registro sirve de excusa para hacer llegar "
+         "este tipo de convocatorias a todo el entramado: concurso nacional anual (categorías Despegue "
+         "Emprendedor y Crecimiento y Expansión) del que Erisea, de Chubut, salió ganador en 2025. Con el "
+         "registro ya armado, avisar de este y de futuros concursos similares es tan simple como filtrar por "
+         "rubro o etapa de desarrollo y escribirles."),
     ]
 
     rows_html = "".join(
