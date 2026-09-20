@@ -897,9 +897,10 @@ with tab_metodologia:
                     <li>Iniciativas dispersas entre organismos, sin conducción unificada</li>
                 </ul>
                 <p style="margin:0; font-size:0.88rem; color:var(--text-muted);"><b>Efectos:</b>
-                Chubut rezagada en el Consejo Federal Emprendedor; emprendedores sin financiamiento
-                adaptado a su etapa; menor incidencia en políticas nacionales; más informalidad y
-                mortalidad temprana de emprendimientos.</p>
+                Chubut rezagada frente a otras provincias y a la Secretaría PyME de la Nación en el
+                diseño de políticas de emprendedurismo; emprendedores sin financiamiento adaptado a
+                su etapa; menor incidencia en políticas nacionales; más informalidad y mortalidad
+                temprana de emprendimientos.</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -919,8 +920,9 @@ with tab_metodologia:
                     <li>Unificar bajo una conducción provincial las iniciativas dispersas</li>
                 </ul>
                 <p style="margin:0; font-size:0.88rem; color:var(--text-muted);"><b>Fines:</b>
-                Chubut activa en el Consejo Federal Emprendedor; financiamiento adaptado a cada
-                etapa; más incidencia nacional; menor informalidad y mayor sostenibilidad.</p>
+                Chubut activa frente a otras provincias y a la Secretaría PyME de la Nación en el
+                diseño de políticas de emprendedurismo; financiamiento adaptado a cada etapa; más
+                incidencia nacional; menor informalidad y mayor sostenibilidad.</p>
             </div>
             """,
             unsafe_allow_html=True,
