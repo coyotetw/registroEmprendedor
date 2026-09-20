@@ -347,6 +347,7 @@ ANTIGUEDAD = ["Menos de 1 año", "Entre 1 y 5 años", "Entre 5 y 10 años", "Má
 ALCANCE_TERRITORIAL = ["Local", "Regional", "Provincial", "Nacional", "Internacional"]
 PERSONAS_INVOLUCRADAS = ["Solo yo", "2 a 3 personas", "4 a 5 personas", "Más de 5 personas"]
 FIGURA_IMPOSITIVA = ["No inscripto/a", "Monotributo", "Monotributo Social", "Responsable Inscripto", "Otra"]
+FIGURAS_YA_FORMALIZADO = ["Monotributo", "Monotributo Social", "Responsable Inscripto"]
 BARRERA_FORMALIZACION = [
     "Costos impositivos", "Falta de información", "Trámites complejos",
     "Falta de tiempo", "No lo considera necesario", "Otra",
@@ -452,6 +453,22 @@ with tab_inscripcion:
         ["Datos personales", "Trayectoria emprendedora", "Emprendimiento"]
     )
 
+    # Figura impositiva se pregunta fuera del formulario para poder reaccionar en el momento:
+    # si ya está formalizado/a, no le volvemos a preguntar por situación fiscal, estado de
+    # formalización ni barreras de formalización (pedido de Maca: sacar preguntas redundantes).
+    with sub_emprendimiento:
+        st.markdown("**3. Emprendimiento**")
+        st.caption("Objetivo: actualizar rubro, alcance, canales y datos principales del emprendimiento.")
+        st.markdown("**Antes de empezar**")
+        st.selectbox("Figura impositiva", ["Seleccionar..."] + FIGURA_IMPOSITIVA, key="figura_impositiva")
+        st.caption(
+            "Con esto ya sabemos si estás formalizado/a: si elegís Monotributo, Monotributo "
+            "Social o Responsable Inscripto, más abajo no te preguntamos de nuevo por tu "
+            "situación fiscal, tu estado de formalización ni por barreras de formalización."
+        )
+
+    ya_formalizado = val("figura_impositiva") in FIGURAS_YA_FORMALIZADO
+
     with st.form("form_registro", clear_on_submit=False):
 
         with sub_datos:
@@ -494,9 +511,6 @@ with tab_inscripcion:
             detalle_ingresos_extra = st.text_area("Detalle de ingresos extra", key="detalle_ingresos_extra")
 
         with sub_emprendimiento:
-            st.markdown("**3. Emprendimiento**")
-            st.caption("Objetivo: actualizar rubro, alcance, canales y datos principales del emprendimiento.")
-
             st.markdown("**3.1 Datos generales**")
             nombre_emprendimiento = st.text_input("Nombre del emprendimiento *", key="nombre_emprendimiento")
             rubros = st.multiselect("Rubros", RUBROS, key="rubros")
@@ -516,21 +530,34 @@ with tab_inscripcion:
 
             st.markdown("---")
             st.markdown("**3.2 Formalización y aspectos fiscales**")
+            st.caption(f"Figura impositiva: **{val('figura_impositiva') or 'sin definir todavía'}**.")
             col1, col2 = st.columns(2)
             with col1:
                 personas_involucradas = st.selectbox(
                     "Personas involucradas en el emprendimiento", ["Seleccionar..."] + PERSONAS_INVOLUCRADAS, key="personas_involucradas"
                 )
-                figura_impositiva = st.selectbox("Figura impositiva", ["Seleccionar..."] + FIGURA_IMPOSITIVA, key="figura_impositiva")
-                barrera_formalizacion = st.selectbox(
-                    "Barrera de formalización", ["Seleccionar..."] + BARRERA_FORMALIZACION, key="barrera_formalizacion"
-                )
-            with col2:
-                situacion_fiscal = st.selectbox("Situación fiscal (¿está inscripto/a?)", ["Seleccionar..."] + SI_NO, key="situacion_fiscal")
-                estado_formalizacion = st.text_input("Estado de formalización (ej: Monotributo)", key="estado_formalizacion")
                 emision_facturas = st.selectbox("Emisión de facturas", ["Seleccionar..."] + EMISION_FACTURAS, key="emision_facturas")
-            acceso_regimenes = st.text_area("Acceso a regímenes", key="acceso_regimenes")
-            barreras_formalizacion_detalle = st.text_area("Barreras de formalización (detalle)", key="barreras_formalizacion_detalle")
+            with col2:
+                acceso_regimenes = st.text_area("Acceso a regímenes", key="acceso_regimenes")
+
+            if ya_formalizado:
+                st.info(
+                    f"Ya formalizado/a como **{val('figura_impositiva')}** — no hace falta "
+                    "preguntar por situación fiscal, estado de formalización ni barreras de "
+                    "formalización."
+                )
+            else:
+                if st.session_state.get("barrera_formalizacion") not in ["Seleccionar..."] + BARRERA_FORMALIZACION:
+                    st.session_state.pop("barrera_formalizacion", None)
+                col1, col2 = st.columns(2)
+                with col1:
+                    barrera_formalizacion = st.selectbox(
+                        "Barrera de formalización", ["Seleccionar..."] + BARRERA_FORMALIZACION, key="barrera_formalizacion"
+                    )
+                with col2:
+                    barreras_formalizacion_detalle = st.text_area(
+                        "Barreras de formalización (detalle)", key="barreras_formalizacion_detalle"
+                    )
 
             st.markdown("---")
             st.markdown("**3.3 Comunicación y digitalización**")
@@ -622,13 +649,15 @@ with tab_inscripcion:
                 "Etapa de desarrollo": val("etapa_desarrollo"),
                 "Antigüedad": val("antiguedad"), "Alcance territorial": val("alcance_territorial"),
                 "Localidades de alcance": ", ".join(val("localidades_alcance") or []),
-                # 3.2 Formalización y fiscal
+                # 3.2 Formalización y fiscal — situación fiscal y estado de formalización se
+                # derivan de la figura impositiva, no se vuelven a preguntar (redundante).
                 "Personas involucradas": val("personas_involucradas"),
-                "Situación fiscal": val("situacion_fiscal"), "Figura impositiva": val("figura_impositiva"),
-                "Estado de formalización": val("estado_formalizacion"),
+                "Figura impositiva": val("figura_impositiva"),
+                "Situación fiscal": "No" if val("figura_impositiva") in ("", "No inscripto/a") else "Sí",
+                "Estado de formalización": val("figura_impositiva"),
                 "Acceso a regímenes": val("acceso_regimenes"),
-                "Barrera de formalización": val("barrera_formalizacion"),
-                "Barreras de formalización (detalle)": val("barreras_formalizacion_detalle"),
+                "Barrera de formalización": "No aplica (ya formalizado/a)" if ya_formalizado else val("barrera_formalizacion"),
+                "Barreras de formalización (detalle)": "" if ya_formalizado else val("barreras_formalizacion_detalle"),
                 "Emisión de facturas": val("emision_facturas"),
                 # 3.3 Comunicación y digitalización
                 "¿Usa redes sociales?": val("usa_redes"),
