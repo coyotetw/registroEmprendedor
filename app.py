@@ -408,8 +408,6 @@ st.markdown(
         </div>
         <span class="status-pill">Prototipo</span>
     </div>
-    <p class="subcaption">Basado en los campos de "Mi Espacio" (Raíz Emprendedora). Lo cargado acá
-    vive solo en esta sesión y se borra automáticamente al reiniciar la app — no es la base real.</p>
     """,
     unsafe_allow_html=True,
 )
