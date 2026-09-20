@@ -495,7 +495,7 @@ with tab_inscripcion:
             st.caption("Objetivo: datos que ayudan a acompañar mejor el recorrido de la persona emprendedora.")
             col1, col2 = st.columns(2)
             with col1:
-                cuil = st.text_input("CUIL", key="cuil")
+                cuil = st.text_input("CUIL/CUIT", key="cuil")
                 hijos = st.number_input("Hijos/as (cantidad)", min_value=0, step=1, key="hijos")
                 discapacidad = st.selectbox("¿Tiene discapacidad? *", ["Seleccionar..."] + SI_NO, key="discapacidad")
                 situacion_laboral = st.selectbox(
@@ -636,7 +636,7 @@ with tab_inscripcion:
                 "Fecha de nacimiento": str(val("fecha_nacimiento") or ""), "Email": val("email"),
                 "Teléfono": val("telefono"), "Localidad de residencia": val("localidad_residencia"),
                 # 2. Trayectoria emprendedora
-                "CUIL": val("cuil"), "WhatsApp": val("whatsapp_personal"),
+                "CUIL/CUIT": val("cuil"), "WhatsApp": val("whatsapp_personal"),
                 "Hijos/as": val("hijos"), "Personas a cargo": val("personas_a_cargo"),
                 "¿Tiene discapacidad?": val("discapacidad"), "Nivel educativo": val("nivel_educativo"),
                 "Situación laboral": val("situacion_laboral"),
