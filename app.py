@@ -14,6 +14,18 @@ La app está organizada en 6 segmentos (tabs), en este orden:
 5. Programas y Capacitaciones
 6. Metodología CFI y Diagnóstico
 
+Sistema de diseño:
+- Tipografía: "Sora" (títulos, geométrica y moderna) + "Public Sans" (texto,
+  la misma familia que usan los sistemas de diseño de gobierno como el
+  USWDS — coherente con que esto es una herramienta de gestión pública) +
+  "JetBrains Mono" para datos tabulares (DNI, CUIT, fechas).
+- Color: base neutra cálida (no blanco puro) + un solo acento saturado
+  (naranja institucional del Gobierno del Chubut) para acción/foco, y el
+  teal del isologo reservado para información secundaria/etiquetas.
+- Layout: barra superior angosta (sin hero degradé), navegación por pasos
+  numerados, contenido en columna centrada con aire, tablas y listas en
+  vez de tarjetas repetidas.
+
 IMPORTANTE - Es un SIMULACRO:
 La "base de datos" de este prototipo vive únicamente en la sesión de
 Streamlit (st.session_state). Se borra sola cada vez que se reinicia la
@@ -31,20 +43,6 @@ from datetime import date
 from datetime import datetime
 import io
 
-# ---------------------------------------------------------------------------
-# Paleta de colores institucional (Gobierno del Chubut / campaña "DINO")
-# Tomada del sitio institucional: banda naranja-amarilla degradée como fondo
-# de héroe, marca "Gobierno del Chubut" en trazo naranja/teal/azul, textos en
-# blanco sobre la banda y en gris oscuro sobre fondo blanco.
-# ---------------------------------------------------------------------------
-COLOR_NARANJA = "#F0791F"     # naranja principal (degradé DINO)
-COLOR_AMARILLO = "#FFC629"    # amarillo (degradé DINO)
-COLOR_TEAL = "#00A19A"        # teal del isologo "Gobierno del Chubut"
-COLOR_AZUL = "#1B4B66"        # azul del isologo, para textos/acentos fuertes
-COLOR_TEXTO = "#242424"
-COLOR_FONDO = "#FFFFFF"
-COLOR_FONDO_SUAVE = "#FFF8EE"
-
 st.set_page_config(
     page_title="Registro de Emprendedores | Chubut",
     page_icon="🦖",
@@ -52,108 +50,225 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------------------------------
-# Estilos
+# Sistema de diseño — fuentes + tokens de color + estilos globales
 # ---------------------------------------------------------------------------
 st.markdown(
-    f"""
+    """
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    """,
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+    """
     <style>
-        .stApp {{
-            background-color: {COLOR_FONDO};
-        }}
-        .header-bar {{
-            background: linear-gradient(100deg, {COLOR_NARANJA} 0%, {COLOR_AMARILLO} 100%);
-            padding: 26px 28px;
-            border-radius: 14px;
-            margin-bottom: 10px;
-        }}
-        .header-bar h1 {{
-            color: white;
-            font-size: 1.6rem;
-            margin: 0;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.15);
-        }}
-        .header-bar p {{
-            color: #3A2400;
-            margin: 6px 0 0 0;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }}
-        .badge-demo {{
-            display: inline-block;
-            background-color: {COLOR_AZUL};
-            color: white;
-            font-weight: 600;
-            font-size: 0.7rem;
-            padding: 3px 12px;
-            border-radius: 999px;
-            margin-left: 8px;
-            vertical-align: middle;
-        }}
-        .franja-teal {{
-            height: 6px;
-            background-color: {COLOR_TEAL};
-            border-radius: 4px;
-            margin-bottom: 18px;
-        }}
-        div[data-testid="stForm"] {{
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            border: 1px solid #F0DCC0;
-        }}
-        .stTabs [data-baseweb="tab-list"] {{
-            gap: 4px;
-        }}
-        .stTabs [data-baseweb="tab"] {{
-            background-color: {COLOR_FONDO_SUAVE};
-            border-radius: 8px 8px 0 0;
-        }}
-        .stTabs [aria-selected="true"] {{
-            background-color: {COLOR_TEAL} !important;
-        }}
-        .stTabs [aria-selected="true"] p {{
-            color: white !important;
+        :root {
+            --bg: #FAF8F5;
+            --surface: #FFFFFF;
+            --surface-tint: #FBF3EA;
+            --border: #E7E0D5;
+            --text: #211C16;
+            --text-muted: #756B5E;
+            --accent: #D9691D;
+            --accent-dark: #B4530F;
+            --accent-soft: #F4DFC8;
+            --teal: #0F7A73;
+            --teal-soft: #DCEEEC;
+            --font-display: "Sora", "Helvetica Neue", Arial, sans-serif;
+            --font-body: "Public Sans", "Segoe UI", Arial, sans-serif;
+            --font-mono: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
+        }
+
+        html, body, [class*="css"] { font-family: var(--font-body); color: var(--text); }
+        .stApp { background-color: var(--bg); }
+
+        h1, h2, h3, h4, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4 {
+            font-family: var(--font-display) !important;
+            color: var(--text) !important;
+            letter-spacing: -0.01em;
+        }
+
+        /* ---------- Barra superior ---------- */
+        .topbar {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 18px 4px 16px 4px;
+            border-bottom: 3px solid var(--accent);
+            margin-bottom: 6px;
+        }
+        .topbar-id { display: flex; flex-direction: column; gap: 4px; }
+        .eyebrow {
+            font-family: var(--font-body);
+            font-size: 0.72rem;
             font-weight: 700;
-        }}
-        .stButton>button {{
-            background-color: {COLOR_TEAL};
-            color: white;
-            border-radius: 8px;
-            border: none;
-            font-weight: 600;
-        }}
-        .stButton>button:hover {{
-            background-color: {COLOR_AZUL};
-            color: white;
-        }}
-        .card {{
-            background-color: {COLOR_FONDO_SUAVE};
-            border: 1px solid #F0DCC0;
-            border-left: 6px solid {COLOR_TEAL};
-            border-radius: 10px;
-            padding: 16px 18px;
-            margin-bottom: 14px;
-        }}
-        .card h4 {{
-            margin: 0 0 6px 0;
-            color: {COLOR_AZUL};
-        }}
-        .ejemplo-card {{
-            background-color: white;
-            border: 1px solid #E4E4E4;
-            border-radius: 12px;
-            padding: 18px 22px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-        }}
-        .chip {{
-            display: inline-block;
-            background-color: {COLOR_TEAL}22;
-            color: {COLOR_AZUL};
+            letter-spacing: 0.11em;
+            text-transform: uppercase;
+            color: var(--teal);
+        }
+        .topbar h1 {
+            font-size: 1.55rem;
+            font-weight: 700;
+            margin: 0;
+            text-wrap: balance;
+        }
+        .status-pill {
+            align-self: center;
+            border: 1.5px solid var(--accent);
+            color: var(--accent-dark);
+            font-family: var(--font-body);
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 5px 14px;
             border-radius: 999px;
-            padding: 2px 10px;
-            font-size: 0.78rem;
-            margin: 2px 4px 2px 0;
-        }}
+            white-space: nowrap;
+        }
+        .subcaption {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin: 2px 0 18px 0;
+        }
+
+        /* ---------- Tabs como navegación por pasos ---------- */
+        .stTabs [data-baseweb="tab-list"] {
+            gap: 2px;
+            border-bottom: 1px solid var(--border);
+        }
+        .stTabs [data-baseweb="tab"] {
+            background-color: transparent;
+            border-radius: 0;
+            font-family: var(--font-body);
+            font-weight: 600;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            padding: 10px 16px;
+        }
+        .stTabs [aria-selected="true"] {
+            background-color: transparent !important;
+            color: var(--text) !important;
+            box-shadow: inset 0 -3px 0 var(--accent);
+        }
+        .stTabs [aria-selected="true"] p { color: var(--text) !important; font-weight: 700; }
+        .stTabs [data-baseweb="tab-highlight"] { background-color: var(--accent); }
+        .stTabs [data-baseweb="tab-border"] { display: none; }
+
+        /* ---------- Formulario ---------- */
+        div[data-testid="stForm"] {
+            background-color: var(--surface);
+            padding: 22px 24px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+        label, .stMarkdown p, .stCaption, [data-testid="stCaptionContainer"] {
+            font-family: var(--font-body);
+        }
+        [data-testid="stCaptionContainer"] { color: var(--text-muted); }
+
+        .stTextInput input, .stTextArea textarea, .stNumberInput input,
+        .stDateInput input, div[data-baseweb="select"] > div {
+            border-radius: 7px !important;
+            border-color: var(--border) !important;
+        }
+        .stTextInput input:focus, .stTextArea textarea:focus, .stNumberInput input:focus {
+            border-color: var(--accent) !important;
+            box-shadow: 0 0 0 1px var(--accent) !important;
+        }
+
+        /* ---------- Botones ---------- */
+        .stButton>button, .stFormSubmitButton>button, .stDownloadButton>button {
+            background-color: var(--accent);
+            color: white;
+            border-radius: 7px;
+            border: none;
+            font-family: var(--font-body);
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 0.55rem 1.1rem;
+            transition: background-color 0.15s ease;
+        }
+        .stButton>button:hover, .stFormSubmitButton>button:hover, .stDownloadButton>button:hover {
+            background-color: var(--accent-dark);
+            color: white;
+        }
+        .stButton>button:focus-visible, .stFormSubmitButton>button:focus-visible {
+            outline: 2px solid var(--teal);
+            outline-offset: 2px;
+        }
+
+        /* ---------- Utilidades de contenido ---------- */
+        .section-eyebrow {
+            font-family: var(--font-body);
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--teal);
+            margin-bottom: 4px;
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            border-radius: 999px;
+            padding: 2px 11px;
+            font-size: 0.76rem;
+            font-weight: 600;
+            margin: 2px 6px 2px 0;
+        }
+        .tag-mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+        .callout {
+            background-color: var(--surface-tint);
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin: 6px 0 16px 0;
+        }
+        .callout .section-eyebrow { color: var(--accent-dark); }
+
+        .profile-card {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px 26px;
+        }
+        .profile-name { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; margin: 4px 0 10px 0; }
+        .kv-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px 28px;
+            margin-top: 10px;
+        }
+        .kv-grid .kv-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+        .kv-grid .kv-value { font-size: 0.94rem; color: var(--text); }
+
+        .program-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 18px;
+            padding: 14px 2px;
+            border-bottom: 1px solid var(--border);
+        }
+        .program-row:last-child { border-bottom: none; }
+        .program-title { font-family: var(--font-display); font-weight: 600; font-size: 0.98rem; min-width: 260px; }
+        .program-desc { color: var(--text-muted); font-size: 0.88rem; }
+
+        [data-testid="stDataFrame"] { font-family: var(--font-body); }
     </style>
     """,
     unsafe_allow_html=True,
@@ -241,23 +356,21 @@ def val(key):
 
 
 # ---------------------------------------------------------------------------
-# Encabezado
+# Barra superior
 # ---------------------------------------------------------------------------
 st.markdown(
-    f"""
-    <div class="header-bar">
-        <h1>🦖 Registro de Emprendedores &nbsp;<span class="badge-demo">PROTOTIPO / DEMO</span></h1>
-        <p>Provincia del Chubut · Dirección de Promoción de Inversiones · basado en los campos de
-        "Mi Espacio" (Raíz Emprendedora) · colores institucionales del Gobierno del Chubut</p>
+    """
+    <div class="topbar">
+        <div class="topbar-id">
+            <span class="eyebrow">Gobierno del Chubut · Ministerio de Producción</span>
+            <h1>Registro de Emprendedores</h1>
+        </div>
+        <span class="status-pill">Prototipo</span>
     </div>
-    <div class="franja-teal"></div>
+    <p class="subcaption">Basado en los campos de "Mi Espacio" (Raíz Emprendedora). Lo cargado acá
+    vive solo en esta sesión y se borra automáticamente al reiniciar la app — no es la base real.</p>
     """,
     unsafe_allow_html=True,
-)
-
-st.caption(
-    "⚠️ Este es un simulacro de sistema de registro: lo que se carga acá vive solo en esta "
-    "sesión y se borra automáticamente al reiniciar la app. No es la base real."
 )
 
 (
@@ -269,12 +382,12 @@ st.caption(
     tab_metodologia,
 ) = st.tabs(
     [
-        "📝 1. Inscripción",
-        "🗄️ 2. Base de Datos",
-        "👀 3. Ejemplo de Registro",
-        "🗺️ 4. Otras Provincias",
-        "🎓 5. Programas y Capacitaciones",
-        "📊 6. Metodología CFI y Diagnóstico",
+        "01 · Inscripción",
+        "02 · Base de datos",
+        "03 · Ejemplo de registro",
+        "04 · Otras provincias",
+        "05 · Programas y capacitaciones",
+        "06 · Metodología y diagnóstico",
     ]
 )
 
@@ -282,11 +395,12 @@ st.caption(
 # SEGMENTO 1 — INSCRIPCIÓN
 # ===========================================================================
 with tab_inscripcion:
+    st.markdown('<p class="section-eyebrow">Paso 1 de 2 · Carga</p>', unsafe_allow_html=True)
     st.subheader("Formulario de inscripción")
     st.caption("Los mismos campos que usa el sistema de gestión de Raíz Emprendedora.")
 
     sub_datos, sub_trayectoria, sub_emprendimiento = st.tabs(
-        ["1️⃣ Datos personales", "2️⃣ Trayectoria emprendedora", "3️⃣ Emprendimiento"]
+        ["Datos personales", "Trayectoria emprendedora", "Emprendimiento"]
     )
 
     with st.form("form_registro", clear_on_submit=False):
@@ -416,7 +530,7 @@ with tab_inscripcion:
             necesidades_financiamiento = st.text_area("Necesidades de financiamiento", key="necesidades_financiamiento")
 
         st.markdown("&nbsp;", unsafe_allow_html=True)
-        enviado = st.form_submit_button("✅ Registrarme", use_container_width=True)
+        enviado = st.form_submit_button("Registrarme", use_container_width=True)
 
     # -----------------------------------------------------------------------
     # Procesamiento del envío
@@ -491,7 +605,8 @@ with tab_inscripcion:
 # SEGMENTO 2 — BASE DE DATOS
 # ===========================================================================
 with tab_base_datos:
-    st.subheader("Base de datos (sesión actual)")
+    st.markdown('<p class="section-eyebrow">Estado de la sesión</p>', unsafe_allow_html=True)
+    st.subheader("Base de datos")
     st.caption(
         "Esta tabla vive solo en memoria mientras la app está corriendo. Al reiniciar el "
         "servidor (o redeployar), se borra automáticamente — es el comportamiento pedido "
@@ -503,59 +618,68 @@ with tab_base_datos:
 
         buffer = io.BytesIO()
         df.to_excel(buffer, index=False, engine="openpyxl")
-        st.download_button(
-            "⬇️ Descargar registros cargados (Excel)",
-            data=buffer.getvalue(),
-            file_name="registros_emprendedores_demo.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        )
-
-        if st.button("🗑️ Vaciar base ahora (simular borrado automático)"):
-            st.session_state.registros = []
-            st.rerun()
+        col_a, col_b = st.columns([1, 1])
+        with col_a:
+            st.download_button(
+                "Descargar registros (Excel)",
+                data=buffer.getvalue(),
+                file_name="registros_emprendedores_demo.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                use_container_width=True,
+            )
+        with col_b:
+            if st.button("Vaciar base ahora", use_container_width=True):
+                st.session_state.registros = []
+                st.rerun()
     else:
-        st.info("Todavía no hay registros cargados en esta sesión. Cargá uno en '📝 1. Inscripción'.")
+        st.info("Todavía no hay registros cargados en esta sesión. Cargá uno en \"01 · Inscripción\".")
 
 # ===========================================================================
 # SEGMENTO 3 — EJEMPLO DE REGISTRO
 # ===========================================================================
 with tab_ejemplo:
+    st.markdown('<p class="section-eyebrow">Vista previa</p>', unsafe_allow_html=True)
     st.subheader("Así queda un registro completo")
-    st.caption("Ejemplo ilustrativo (datos ficticios) para mostrar cómo se ve una ficha ya cargada.")
+    st.caption("Ejemplo ilustrativo con datos ficticios — no corresponde a una persona real.")
 
     st.markdown(
-        f"""
-        <div class="ejemplo-card">
-            <h3 style="color:{COLOR_AZUL}; margin-top:0;">María Fernanda Gómez &nbsp;
-                <span class="chip">DNI 30.XXX.XXX</span>
-                <span class="chip">Trelew</span>
-                <span class="chip">Registrada el 14/03/2026</span>
-            </h3>
-            <p><b>Emprendimiento:</b> "Tejidos del Sur" — indumentaria y accesorios artesanales en lana patagónica.</p>
-            <p><b>Rubro:</b> Textil, indumentaria y accesorios &nbsp;|&nbsp; <b>Antigüedad:</b> Entre 1 y 5 años
-            &nbsp;|&nbsp; <b>Alcance:</b> Regional</p>
-            <p><b>Formalización:</b> Monotributo (Responsable Inscripto en trámite) &nbsp;|&nbsp;
-            <b>Emisión de facturas:</b> A veces</p>
-            <p><b>Canales de venta:</b> WhatsApp, Redes sociales, Ferias &nbsp;|&nbsp;
-            <b>Nivel de digitalización:</b> Intermedio &nbsp;|&nbsp; <b>¿Usa IA?:</b> Sí (para diseño y redes)</p>
-            <p><b>Situación financiera:</b> Rango de ventas $500.000–$1.000.000/mes · Sin crédito previo ·
-            Interesada en financiamiento para telar industrial</p>
-            <p style="color:#888; font-size:0.85rem; margin-bottom:0;">Este ejemplo muestra el nivel de detalle
-            que puede alcanzar cada ficha del registro, cruzando datos personales, trayectoria y situación
-            del emprendimiento — la misma estructura que carga el formulario de "📝 1. Inscripción".</p>
+        """
+        <div class="profile-card">
+            <span class="tag">Trelew</span>
+            <span class="tag tag-mono">DNI 30.XXX.XXX</span>
+            <span class="tag tag-mono">Registrado 14/03/2026</span>
+            <p class="profile-name">María Fernanda Gómez</p>
+            <div class="kv-grid">
+                <div><div class="kv-label">Emprendimiento</div><div class="kv-value">Tejidos del Sur — indumentaria y accesorios en lana patagónica</div></div>
+                <div><div class="kv-label">Rubro</div><div class="kv-value">Textil, indumentaria y accesorios</div></div>
+                <div><div class="kv-label">Antigüedad</div><div class="kv-value">Entre 1 y 5 años</div></div>
+                <div><div class="kv-label">Alcance</div><div class="kv-value">Regional</div></div>
+                <div><div class="kv-label">Formalización</div><div class="kv-value">Monotributo (Responsable Inscripto en trámite)</div></div>
+                <div><div class="kv-label">Emisión de facturas</div><div class="kv-value">A veces</div></div>
+                <div><div class="kv-label">Canales de venta</div><div class="kv-value">WhatsApp, redes sociales, ferias</div></div>
+                <div><div class="kv-label">Digitalización</div><div class="kv-value">Intermedio · usa IA para diseño y redes</div></div>
+                <div><div class="kv-label">Ventas mensuales</div><div class="kv-value">$500.000 – $1.000.000</div></div>
+                <div><div class="kv-label">Necesidad de financiamiento</div><div class="kv-value">Telar industrial, sin crédito previo</div></div>
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
+    )
+    st.caption(
+        "Muestra el nivel de detalle que alcanza cada ficha, cruzando datos personales, "
+        "trayectoria y situación del emprendimiento — la misma estructura del formulario de "
+        "\"01 · Inscripción\"."
     )
 
 # ===========================================================================
 # SEGMENTO 4 — OTRAS PROVINCIAS: LEYES Y CASOS DE ÉXITO
 # ===========================================================================
 with tab_otras_provincias:
+    st.markdown('<p class="section-eyebrow">Relevamiento normativo</p>', unsafe_allow_html=True)
     st.subheader("Cómo lo resuelven otras provincias")
     st.caption(
-        "Síntesis del relevamiento normativo de registros y leyes de emprendedurismo en "
-        "Argentina — insumo para diseñar el marco legal del registro provincial de Chubut."
+        "Síntesis del relevamiento de registros y leyes de emprendedurismo en Argentina — "
+        "insumo para diseñar el marco legal del registro provincial de Chubut."
     )
 
     df_provincias = pd.DataFrame(
@@ -601,14 +725,15 @@ with tab_otras_provincias:
     st.dataframe(df_provincias, use_container_width=True, hide_index=True)
 
     st.markdown(
-        f"""
-        <div class="card">
-            <h4>🏆 Caso de éxito: Erisea (Chubut)</h4>
-            <p>Ganador de la categoría "Crecimiento y Expansión" del Concurso Nacional
-            <b>Emprendimiento Argentino 2025</b>, frente a 801 emprendimientos presentados de todo el país.
-            Demuestra que Chubut ya tiene talento emprendedor de nivel nacional — lo que falta es la
-            arquitectura institucional (registro + dirección + ley) que provincias como Mendoza ya
-            consolidaron.</p>
+        """
+        <div class="callout">
+            <p class="section-eyebrow">Caso destacado</p>
+            <p style="margin:0 0 6px 0;"><b>Erisea (Chubut)</b> ganó la categoría "Crecimiento y Expansión" del
+            Concurso Nacional Emprendimiento Argentino 2025, frente a 801 emprendimientos presentados de
+            todo el país.</p>
+            <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">Chubut ya tiene talento
+            emprendedor de nivel nacional — lo que falta es la arquitectura institucional (registro +
+            dirección + ley) que provincias como Mendoza ya consolidaron.</p>
         </div>
         """,
         unsafe_allow_html=True,
@@ -623,86 +748,83 @@ with tab_otras_provincias:
 # SEGMENTO 5 — PROGRAMAS Y CAPACITACIONES
 # ===========================================================================
 with tab_programas:
+    st.markdown('<p class="section-eyebrow">Potencial del registro</p>', unsafe_allow_html=True)
     st.subheader("Programas y capacitaciones que se potencian con el registro")
     st.caption(
-        "Una vez que el registro tiene masa crítica de emprendedores cargados, estos son los "
-        "programas y capacitaciones a los que se los puede direccionar o que pueden diseñarse "
-        "a medida con los datos del registro."
+        "Con masa crítica de emprendedores cargados, estos son los programas a los que se los "
+        "puede direccionar o que pueden diseñarse a medida con los datos del registro."
     )
 
     programas = [
-        ("🌱 Raíz Emprendedora", "Programa provincial vigente (Secretaría General de Gobierno). El registro "
+        ("Raíz Emprendedora", "Programa provincial vigente (Secretaría General de Gobierno). El registro "
          "sería su base de datos formal, hoy dispersa en planillas."),
-        ("💼 Chubut Emprende", "Aporte reintegrable de la Secretaría de Trabajo (hasta $5.000.000). El registro "
+        ("Chubut Emprende", "Aporte reintegrable de la Secretaría de Trabajo (hasta $5.000.000). El registro "
          "permite segmentar a quién ofrecérselo primero."),
-        ("🏦 Emprendimiento Argentino (línea de crédito nacional)", "Créditos de $10-50M al 25% TNA a 5 años. "
+        ("Emprendimiento Argentino (línea de crédito nacional)", "Créditos de $10-50M al 25% TNA a 5 años. "
          "Requiere Certificado MiPyME y aval de una incubadora — el registro ayuda a preparar esa documentación."),
-        ("🎓 Red Nacional de Incubadoras / INCUBAR", "Registro nacional de incubadoras y aceleradoras. Chubut "
+        ("Red Nacional de Incubadoras / INCUBAR", "Registro nacional de incubadoras y aceleradoras. Chubut "
          "podría inscribir sus propios espacios de incubación usando el registro como base de postulantes."),
-        ("🚀 NAVES Argentina (Banco Macro + IAE)", "Formación y mentoría para emprendedores en etapa de "
+        ("NAVES Argentina (Banco Macro + IAE)", "Formación y mentoría para emprendedores en etapa de "
          "crecimiento — más de 15.900 personas capacitadas en ediciones previas a nivel nacional."),
-        ("👩 Emprender con Perspectiva de Género", "ANR con foco en mujeres emprendedoras (vía RUMP/EEAE) — "
+        ("Emprender con Perspectiva de Género", "ANR con foco en mujeres emprendedoras (vía RUMP/EEAE) — "
          "coincide con el perfil mayoritario de \"Raíz Emprendedora\" (2.500+ emprendedoras capacitadas)."),
-        ("🤖 Herramientas de IA para el Ámbito Laboral", "Curso dictado dentro del Ministerio de Producción — "
+        ("Herramientas de IA para el Ámbito Laboral", "Curso dictado dentro del Ministerio de Producción — "
          "el campo \"¿Usa inteligencia artificial?\" del registro permite detectar a quién priorizar."),
     ]
 
-    cols = st.columns(2)
-    for i, (titulo, descripcion) in enumerate(programas):
-        with cols[i % 2]:
-            st.markdown(
-                f"""<div class="card"><h4>{titulo}</h4><p style="margin:0;">{descripcion}</p></div>""",
-                unsafe_allow_html=True,
-            )
+    rows_html = "".join(
+        f'<div class="program-row"><div class="program-title">{titulo}</div>'
+        f'<div class="program-desc">{descripcion}</div></div>'
+        for titulo, descripcion in programas
+    )
+    st.markdown(f'<div class="profile-card">{rows_html}</div>', unsafe_allow_html=True)
 
 # ===========================================================================
 # SEGMENTO 6 — METODOLOGÍA CFI Y DIAGNÓSTICO
 # ===========================================================================
 with tab_metodologia:
+    st.markdown('<p class="section-eyebrow">Marco de trabajo</p>', unsafe_allow_html=True)
     st.subheader("Metodología (marco CFI) y diagnóstico del registro")
 
     st.markdown(
-        f"""
-        <div class="card">
-            <h4>📐 Marco metodológico</h4>
-            <p>El diseño de los campos de este registro sigue el <b>Marco Metodológico para el Registro
-            Único Provincial de Emprendedores del Chubut</b>, elaborado con apoyo del
-            <b>Consejo Federal de Inversiones (CFI)</b>. Su lógica es la misma que ya usa el pipeline de
-            datos de Raíz Emprendedora: cruzar cada CUIT/CUIL contra fuentes públicas (BCRA, ARCA/AFIP)
-            para enriquecer el perfil de cada emprendedor/a con información de formalización, acceso a
-            crédito y situación fiscal — sin pedirle al emprendedor datos que el Estado ya tiene.</p>
-            <p style="margin-bottom:0;">El objetivo del marco no es solo juntar datos, sino producir
-            <b>diagnóstico accionable</b>: identificar quiénes están fuera del sistema financiero formal,
-            qué barreras de formalización predominan por rubro o localidad, y dónde conviene priorizar
-            capacitaciones o líneas de crédito.</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
+        """
+        El diseño de los campos de este registro sigue el **Marco Metodológico para el Registro
+        Único Provincial de Emprendedores del Chubut**, elaborado con apoyo del
+        **Consejo Federal de Inversiones (CFI)**. Su lógica es la misma que ya usa el pipeline de
+        datos de Raíz Emprendedora: cruzar cada CUIT/CUIL contra fuentes públicas (BCRA, ARCA/AFIP)
+        para enriquecer el perfil de cada emprendedor/a con información de formalización, acceso a
+        crédito y situación fiscal — sin pedirle al emprendedor datos que el Estado ya tiene.
+
+        El objetivo del marco no es solo juntar datos, sino producir **diagnóstico accionable**:
+        identificar quiénes están fuera del sistema financiero formal, qué barreras de
+        formalización predominan por rubro o localidad, y dónde conviene priorizar
+        capacitaciones o líneas de crédito.
+        """
     )
 
     st.markdown("#### Diagnóstico automático de esta sesión")
 
     if st.session_state.registros:
         df = pd.DataFrame(st.session_state.registros)
-        st.caption(f"Calculado sobre los {len(df)} registro(s) cargado(s) en '📝 1. Inscripción'.")
+        st.caption(f"Calculado sobre los {len(df)} registro(s) cargado(s) en \"01 · Inscripción\".")
 
         col1, col2 = st.columns(2)
         with col1:
             st.markdown("**Por localidad de residencia**")
             conteo_localidad = df["Localidad de residencia"].replace("", "Sin dato").value_counts()
-            st.bar_chart(conteo_localidad, color=COLOR_TEAL)
+            st.bar_chart(conteo_localidad, color="#D9691D")
         with col2:
             st.markdown("**Por nivel de digitalización**")
             conteo_digital = df["Nivel de digitalización"].replace("", "Sin dato").value_counts()
-            st.bar_chart(conteo_digital, color=COLOR_NARANJA)
+            st.bar_chart(conteo_digital, color="#0F7A73")
 
         st.markdown("**Por figura impositiva**")
         conteo_fiscal = df["Figura impositiva"].replace("", "Sin dato").value_counts()
-        st.bar_chart(conteo_fiscal, color=COLOR_AZUL)
+        st.bar_chart(conteo_fiscal, color="#211C16")
     else:
         st.info(
             "Todavía no hay registros cargados en esta sesión — cargá al menos uno en "
-            "'📝 1. Inscripción' para ver el diagnóstico automático (localidad, digitalización, "
+            "\"01 · Inscripción\" para ver el diagnóstico automático (localidad, digitalización, "
             "situación fiscal) generado en vivo a partir de esos datos."
         )
 
