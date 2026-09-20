@@ -786,14 +786,21 @@ with tab_programas:
          "permite segmentar a quién ofrecérselo primero."),
         ("Emprendimiento Argentino (línea de crédito nacional)", "Créditos de $10-50M al 25% TNA a 5 años. "
          "Requiere Certificado MiPyME y aval de una incubadora — el registro ayuda a preparar esa documentación."),
-        ("Red Nacional de Incubadoras / INCUBAR", "Registro nacional de incubadoras y aceleradoras. Chubut "
-         "podría inscribir sus propios espacios de incubación usando el registro como base de postulantes."),
-        ("NAVES Argentina (Banco Macro + IAE)", "Formación y mentoría para emprendedores en etapa de "
-         "crecimiento — más de 15.900 personas capacitadas en ediciones previas a nivel nacional."),
-        ("Emprender con Perspectiva de Género", "ANR con foco en mujeres emprendedoras (vía RUMP/EEAE) — "
-         "coincide con el perfil mayoritario de \"Raíz Emprendedora\" (2.500+ emprendedoras capacitadas)."),
-        ("Herramientas de IA para el Ámbito Laboral", "Curso dictado dentro del Ministerio de Producción — "
-         "el campo \"¿Usa inteligencia artificial?\" del registro permite detectar a quién priorizar."),
+        ("Chubut Potencia", "Capacitaciones gratuitas del Ministerio de Producción y la Secretaría de Ciencia y "
+         "Tecnología, en convenio con CAME, con un primer eje específico de emprendedurismo (modelos de negocio, "
+         "comercialización, marketing digital, gestión). El registro permite convocar directamente a quienes "
+         "ya están inscriptos como emprendedores."),
+        ("INNOVA CFI", "Fondo de inversión en innovación del Consejo Federal de Inversiones para startups "
+         "tecnológicas en etapa Pre-seed/Seed (deuda condicionada e instrumentos convertibles). El registro "
+         "ayuda a identificar a los emprendimientos de base tecnológica de Chubut en condiciones de postularse."),
+        ("Kit 4.0", "Programa nacional de transformación digital para PyMEs industriales: el Estado cubre "
+         "hasta el 50% del valor de kits de digitalización (ciberseguridad, IoT, impresión 3D). Requiere "
+         "personas jurídicas con Certificado MiPyME — el registro ayuda a detectar a quiénes les conviene dar "
+         "ese salto de formalización primero."),
+        ("Creando Capacidades Locales", "Programa nacional-provincial de empleo y formación (Chubut es la "
+         "quinta provincia en sumarse) con trayectos en gestión de emprendimientos, atención al cliente, "
+         "programación y automatización, más acceso a la plataforma Capacitar (500+ cursos gratuitos). El "
+         "registro permite orientar a cada emprendedor/a al trayecto que le falta."),
     ]
 
     rows_html = "".join(
@@ -802,6 +809,11 @@ with tab_programas:
         for titulo, descripcion in programas
     )
     st.markdown(f'<div class="profile-card">{rows_html}</div>', unsafe_allow_html=True)
+    st.caption(
+        "Lista no exhaustiva: además de estos, hay otras líneas provinciales y nacionales que se "
+        "van sumando (nuevos programas del Ministerio de Producción, convocatorias del CFI, etc.) "
+        "y que el registro permitiría mapear a medida que aparecen."
+    )
 
 # ===========================================================================
 # SEGMENTO 6 — METODOLOGÍA CFI Y DIAGNÓSTICO
