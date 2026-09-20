@@ -846,10 +846,6 @@ with tab_programas:
          "hasta el 50% del valor de kits de digitalización (ciberseguridad, IoT, impresión 3D). Requiere "
          "personas jurídicas con Certificado MiPyME — el registro ayuda a detectar a quiénes les conviene dar "
          "ese salto de formalización primero."),
-        ("Creando Capacidades Locales", "Programa nacional-provincial de empleo y formación (Chubut es la "
-         "quinta provincia en sumarse) con trayectos en gestión de emprendimientos, atención al cliente, "
-         "programación y automatización, más acceso a la plataforma Capacitar (500+ cursos gratuitos). El "
-         "registro permite orientar a cada emprendedor/a al trayecto que le falta."),
         ("Concurso Emprendimiento Argentino", "Ejemplo de cómo el registro sirve de excusa para hacer llegar "
          "este tipo de convocatorias a todo el entramado: concurso nacional anual (categorías Despegue "
          "Emprendedor y Crecimiento y Expansión) del que Erisea, de Chubut, salió ganador en 2025. Con el "
