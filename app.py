@@ -823,25 +823,100 @@ with tab_programas:
 # ===========================================================================
 with tab_metodologia:
     st.markdown('<p class="section-eyebrow">Marco de trabajo</p>', unsafe_allow_html=True)
-    st.subheader("Metodología (marco CFI) y diagnóstico del registro")
+    st.subheader("Metodología (árbol de problemas/soluciones CFI) y diagnóstico del registro")
 
     st.markdown(
         """
-        El diseño de los campos de este registro sigue el **Marco Metodológico para el Registro
-        Único Provincial de Emprendedores del Chubut**, elaborado con apoyo del
-        **Consejo Federal de Inversiones (CFI)**. Su lógica es la misma que ya usa el pipeline de
-        datos de Raíz Emprendedora: cruzar cada CUIT/CUIL contra fuentes públicas (BCRA, ARCA/AFIP)
-        para enriquecer el perfil de cada emprendedor/a con información de formalización, acceso a
-        crédito y situación fiscal — sin pedirle al emprendedor datos que el Estado ya tiene.
+        Este registro no nace de un capricho de diseño: es uno de los **medios directos** del
+        **Árbol de Soluciones** construido con la metodología de planificación del
+        **Consejo Federal de Inversiones (CFI)** para justificar la creación de una
+        **Dirección de Emprendedurismo** dentro del Ministerio de Producción del Chubut.
+        """
+    )
 
-        El objetivo del marco no es solo juntar datos, sino producir **diagnóstico accionable**:
-        identificar quiénes están fuera del sistema financiero formal, qué barreras de
-        formalización predominan por rubro o localidad, y dónde conviene priorizar
-        capacitaciones o líneas de crédito.
+    col_prob, col_sol = st.columns(2)
+    with col_prob:
+        st.markdown(
+            """
+            <div class="callout">
+                <p class="section-eyebrow">Árbol de Problemas</p>
+                <p style="margin:0 0 8px 0;"><b>Problema central:</b> ausencia de una Dirección o
+                Programa formal de Emprendedurismo en el Ministerio de Producción de Chubut.</p>
+                <p style="margin:0 0 4px 0; font-size:0.88rem;"><b>Causas directas:</b></p>
+                <ul style="margin:0 0 8px 18px; font-size:0.88rem; color:var(--text-muted);">
+                    <li>Sin estructura orgánica ni presupuesto propio</li>
+                    <li>Falta de un Registro Único de Emprendedores provincial</li>
+                    <li>Sin líneas de financiamiento articuladas con el Banco del Chubut</li>
+                    <li>Iniciativas dispersas entre organismos, sin conducción unificada</li>
+                </ul>
+                <p style="margin:0; font-size:0.88rem; color:var(--text-muted);"><b>Efectos:</b>
+                Chubut rezagada en el Consejo Federal Emprendedor; emprendedores sin financiamiento
+                adaptado a su etapa; menor incidencia en políticas nacionales; más informalidad y
+                mortalidad temprana de emprendimientos.</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    with col_sol:
+        st.markdown(
+            """
+            <div class="callout">
+                <p class="section-eyebrow">Árbol de Soluciones</p>
+                <p style="margin:0 0 8px 0;"><b>Objetivo central:</b> crear una Dirección o Programa
+                de Emprendedurismo en el Ministerio de Producción de Chubut.</p>
+                <p style="margin:0 0 4px 0; font-size:0.88rem;"><b>Medios directos:</b></p>
+                <ul style="margin:0 0 8px 18px; font-size:0.88rem; color:var(--text-muted);">
+                    <li>Estructura orgánica y presupuesto propio</li>
+                    <li><b>Implementar un Registro Único de Emprendedores</b> (este prototipo)</li>
+                    <li>Líneas de financiamiento articuladas con el Banco del Chubut</li>
+                    <li>Unificar bajo una conducción provincial las iniciativas dispersas</li>
+                </ul>
+                <p style="margin:0; font-size:0.88rem; color:var(--text-muted);"><b>Fines:</b>
+                Chubut activa en el Consejo Federal Emprendedor; financiamiento adaptado a cada
+                etapa; más incidencia nacional; menor informalidad y mayor sostenibilidad.</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    st.markdown(
+        """
+        #### Del árbol al Registro: qué define el Marco Metodológico
+
+        El **Marco Metodológico y Propuesta de Contenidos del Registro Único Provincial de
+        Emprendedores** (Dirección de Promoción de Inversiones) traduce ese medio directo en una
+        propuesta concreta. Los puntos que ya están reflejados en este prototipo:
+
+        - **2.2 Perfil poblacional prioritario** — mujeres y juventud, con antecedentes propios
+          (Raíz Emprendedora ya capacita a más de 2.500 emprendedoras; el registro municipal de
+          Puerto Madryn releva mayoritariamente proyectos liderados por mujeres).
+        - **2.3 Creación del Registro** — carácter voluntario, gratuito y digital; alta con DNI y
+          declaración jurada de actividad (el CUIT/CUIL se suma al completar la ficha, para no
+          excluir a quien todavía no formalizó); segmentación por etapa de desarrollo y por
+          pertenencia a los grupos prioritarios.
+        - **2.4 Vinculación con sellos y registros preexistentes** — reconocimiento simplificado
+          para quienes ya tengan el Sello Origen Chubut o estén en Raíz Emprendedora/Chubut
+          Emprende, e interoperabilidad con los sellos municipales (Puerto Madryn, "Hecho en
+          Esquel", Comodoro Conocimiento) para no pedir dos veces el mismo dato.
+
+        Puntos del Marco que todavía **no** están instrumentados en este prototipo (son de
+        política, no de formulario) y que necesitan una norma o un convenio para activarse:
+
+        - **2.5 – 2.8** Beneficios impositivos en Ingresos Brutos, convenio de crédito preferencial
+          con el Banco del Chubut, priorización en el Fondo de Garantías (lógica FOGARÍO de Río
+          Negro) y una línea de microcréditos para etapa inicial.
+        - **2.9 – 2.11** Capacitación canalizada con organismos existentes, mesa de articulación
+          interinstitucional voluntaria, y gobernanza del Registro a cargo del Ministerio de
+          Producción, reglamentada por decreto.
         """
     )
 
     st.markdown("#### Diagnóstico automático de esta sesión")
+    st.caption(
+        "Este panel es la instrumentación concreta del medio directo \"Implementar un Registro "
+        "Único de Emprendedores\" del Árbol de Soluciones: mientras se resuelve la ley, ya permite "
+        "ver quién se está inscribiendo y con qué características."
+    )
 
     if st.session_state.registros:
         df = pd.DataFrame(list(st.session_state.registros.values()))
@@ -870,7 +945,8 @@ with tab_metodologia:
         )
 
     st.caption(
-        "En producción, este mismo diagnóstico se calcularía sobre la base real (no la de sesión), "
-        "incorporando además el cruce con BCRA/ARCA — tal como ya funciona en el pipeline de "
-        "~1.700 CUITs de Herramientas Financieras Chubut."
+        "En producción, este mismo diagnóstico se calcularía sobre la base real del Registro "
+        "(no la de sesión), lo que permitiría medir en el tiempo el avance de los medios directos "
+        "del Árbol de Soluciones — por ejemplo, cuánta gente inscripta pertenece a los grupos "
+        "prioritarios del punto 2.2 del Marco Metodológico."
     )
