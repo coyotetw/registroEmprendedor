@@ -799,37 +799,20 @@ with tab_otras_provincias:
     )
     st.dataframe(df_provincias, use_container_width=True, hide_index=True)
 
-    col_caso, col_compre = st.columns(2)
-    with col_caso:
-        st.markdown(
-            """
-            <div class="callout">
-                <p class="section-eyebrow">Caso destacado</p>
-                <p style="margin:0 0 6px 0;"><b>Erisea (Chubut)</b> ganó la categoría "Crecimiento y Expansión"
-                del Concurso Nacional Emprendimiento Argentino 2025, frente a 801 emprendimientos
-                presentados de todo el país.</p>
-                <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">Chubut ya tiene talento
-                emprendedor de nivel nacional — lo que falta es la arquitectura institucional (registro +
-                dirección + ley) que provincias como Mendoza ya consolidaron.</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-    with col_compre:
-        st.markdown(
-            """
-            <div class="callout">
-                <p class="section-eyebrow">Compre local</p>
-                <p style="margin:0 0 6px 0;"><b>"Compre San Luis"</b> es una red oficial de vinculación
-                comercial que conecta emprendedores, empresas y proveedores (26.202 actores integrados),
-                para que el crédito y la capacitación se traduzcan en ventas reales dentro de la provincia.</p>
-                <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">Chubut ya tiene un antecedente
-                propio en "Compre Chubut" — el registro sería la base de datos natural para darle escala y
-                conectar la demanda pública/privada local con los emprendimientos ya inscriptos.</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+    st.markdown(
+        """
+        <div class="callout">
+            <p class="section-eyebrow">Caso destacado</p>
+            <p style="margin:0 0 6px 0;"><b>Erisea (Chubut)</b> ganó la categoría "Crecimiento y Expansión"
+            del Concurso Nacional Emprendimiento Argentino 2025, frente a 801 emprendimientos
+            presentados de todo el país.</p>
+            <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">Chubut ya tiene talento
+            emprendedor de nivel nacional — lo que falta es la arquitectura institucional (registro +
+            dirección + ley) que provincias como Mendoza ya consolidaron.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
     st.caption(
         "Fuente: relevamiento normativo propio sobre Boletines Oficiales y sitios oficiales "
         "provinciales, y relevamiento del ecosistema emprendedor de San Luis (septiembre 2026). "
