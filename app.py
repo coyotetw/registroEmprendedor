@@ -373,7 +373,6 @@ st.markdown(
     """
     <div class="topbar">
         <div class="topbar-id">
-            <span class="eyebrow">Gobierno del Chubut · Ministerio de Producción</span>
             <h1>Registro de Emprendedores</h1>
         </div>
         <span class="status-pill">Prototipo</span>
