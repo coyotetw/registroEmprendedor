@@ -887,9 +887,14 @@ with tab_metodologia:
         Emprendedores** (Dirección de Promoción de Inversiones) traduce ese medio directo en una
         propuesta concreta. Los puntos que ya están reflejados en este prototipo:
 
-        - **2.2 Perfil poblacional prioritario** — mujeres y juventud, con antecedentes propios
-          (Raíz Emprendedora ya capacita a más de 2.500 emprendedoras; el registro municipal de
-          Puerto Madryn releva mayoritariamente proyectos liderados por mujeres).
+        - **2.2 Perfil poblacional** — el universo del Registro es toda persona que emprende o
+          quiere emprender en Chubut, segmentada en distintos ejes para poder diseñar política
+          diferenciada: género (Raíz Emprendedora ya capacita a más de 2.500 emprendedoras; el
+          registro municipal de Puerto Madryn releva mayoritariamente proyectos liderados por
+          mujeres), juventud, personas con discapacidad (dato que el Registro ya releva de forma
+          obligatoria), localización (rural/urbana, según la localidad de residencia y de alcance
+          del emprendimiento) y etapa de desarrollo. La ley puede sumar otros ejes a medida que el
+          propio Registro muestre qué segmentos están sub-representados.
         - **2.3 Creación del Registro** — carácter voluntario, gratuito y digital; alta con DNI y
           declaración jurada de actividad (el CUIT/CUIL se suma al completar la ficha, para no
           excluir a quien todavía no formalizó); segmentación por etapa de desarrollo y por
