@@ -135,10 +135,20 @@ st.markdown(
             margin: 2px 0 18px 0;
         }
 
-        /* ---------- Tabs como navegación por pasos ---------- */
+        /* ---------- Tabs como navegación por pasos (con scroll horizontal en celular) ---------- */
         .stTabs [data-baseweb="tab-list"] {
             gap: 2px;
             border-bottom: 1px solid var(--border);
+            overflow-x: auto !important;
+            overflow-y: hidden;
+            flex-wrap: nowrap !important;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+        }
+        .stTabs [data-baseweb="tab-list"]::-webkit-scrollbar { height: 5px; }
+        .stTabs [data-baseweb="tab-list"]::-webkit-scrollbar-thumb {
+            background-color: var(--accent-soft);
+            border-radius: 999px;
         }
         .stTabs [data-baseweb="tab"] {
             background-color: transparent;
@@ -148,6 +158,8 @@ st.markdown(
             font-size: 0.88rem;
             color: var(--text-muted);
             padding: 10px 16px;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
         .stTabs [aria-selected="true"] {
             background-color: transparent !important;
@@ -157,6 +169,25 @@ st.markdown(
         .stTabs [aria-selected="true"] p { color: var(--text) !important; font-weight: 700; }
         .stTabs [data-baseweb="tab-highlight"] { background-color: var(--accent); }
         .stTabs [data-baseweb="tab-border"] { display: none; }
+
+        .scroll-hint {
+            display: none;
+            color: var(--teal);
+            font-size: 0.76rem;
+            font-weight: 600;
+            margin: 0 0 4px 0;
+        }
+
+        /* ---------- Ajustes para pantallas de celular ---------- */
+        @media (max-width: 640px) {
+            .topbar h1 { font-size: 1.25rem; }
+            .stTabs [data-baseweb="tab"] { font-size: 0.8rem; padding: 9px 12px; }
+            div[data-testid="stForm"] { padding: 16px 14px; }
+            .kv-grid { grid-template-columns: 1fr; }
+            .program-row { flex-direction: column; gap: 4px; }
+            .program-title { min-width: 0; }
+            .scroll-hint { display: block; }
+        }
 
         /* ---------- Formulario ---------- */
         div[data-testid="stForm"] {
@@ -383,6 +414,12 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+st.markdown(
+    '<p class="scroll-hint">← Deslizá para ver las 6 secciones: Inscripción, Base de datos, '
+    'Ejemplo, Otras provincias, Programas, Metodología →</p>',
+    unsafe_allow_html=True,
+)
+
 (
     tab_inscripcion,
     tab_base_datos,
@@ -393,11 +430,11 @@ st.markdown(
 ) = st.tabs(
     [
         "01 · Inscripción",
-        "02 · Base de datos",
-        "03 · Ejemplo de registro",
-        "04 · Otras provincias",
-        "05 · Programas y capacitaciones",
-        "06 · Metodología y diagnóstico",
+        "02 · Base",
+        "03 · Ejemplo",
+        "04 · Provincias",
+        "05 · Programas",
+        "06 · Metodología",
     ]
 )
 
