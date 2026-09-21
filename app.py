@@ -54,6 +54,7 @@ st.set_page_config(
 # ---------------------------------------------------------------------------
 st.markdown(
     """
+    <meta name="color-scheme" content="light only">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
@@ -81,8 +82,15 @@ st.markdown(
             --font-mono: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
         }
 
-        html, body, [class*="css"] { font-family: var(--font-body); color: var(--text); }
-        .stApp { background-color: var(--bg); }
+        html { color-scheme: light only; }
+        html, body, [class*="css"] {
+            font-family: var(--font-body);
+            color: var(--text) !important;
+            background-color: var(--bg);
+        }
+        .stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
+            background-color: var(--bg) !important;
+        }
 
         h1, h2, h3, h4, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4 {
             font-family: var(--font-display) !important;
@@ -138,6 +146,7 @@ st.markdown(
         /* ---------- Tabs como navegación por pasos (con scroll horizontal en celular) ---------- */
         .stTabs [data-baseweb="tab-list"] {
             gap: 2px;
+            background-color: var(--bg) !important;
             border-bottom: 1px solid var(--border);
             overflow-x: auto !important;
             overflow-y: hidden;
@@ -151,18 +160,19 @@ st.markdown(
             border-radius: 999px;
         }
         .stTabs [data-baseweb="tab"] {
-            background-color: transparent;
+            background-color: var(--bg) !important;
             border-radius: 0;
             font-family: var(--font-body);
             font-weight: 600;
             font-size: 0.88rem;
-            color: var(--text-muted);
+            color: var(--text-muted) !important;
             padding: 10px 16px;
             flex-shrink: 0;
             white-space: nowrap;
         }
+        .stTabs [data-baseweb="tab"] p { color: var(--text-muted) !important; }
         .stTabs [aria-selected="true"] {
-            background-color: transparent !important;
+            background-color: var(--bg) !important;
             color: var(--text) !important;
             box-shadow: inset 0 -3px 0 var(--accent);
         }
