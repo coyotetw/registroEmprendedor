@@ -896,6 +896,13 @@ with tab_programas:
         ("INNOVA CFI", "Fondo de inversión en innovación del Consejo Federal de Inversiones para startups "
          "tecnológicas en etapa Pre-seed/Seed (deuda condicionada e instrumentos convertibles). El registro "
          "ayuda a identificar a los emprendimientos de base tecnológica de Chubut en condiciones de postularse."),
+        ("Créditos CFI · Desarrollo Productivo y Financiero de Mujeres", "Línea de crédito del Consejo Federal "
+         "de Inversiones para emprendedoras (monotributistas y autónomas) y MiPyMEs lideradas por mujeres "
+         "(51% o más del capital social en titularidad femenina, o 20% con mujer en directorio/alta gerencia). "
+         "Financia obras civiles, bienes de capital y capital de trabajo; montos de $4 a $200 millones, hasta "
+         "48 meses de plazo y 80% de la inversión total. Se tramita ante la Unidad de Enlace provincial (UEP) "
+         "del CFI. El registro permite identificar de antemano a las emprendedoras y empresas lideradas por "
+         "mujeres en condiciones de acceder a esta línea."),
         ("Kit 4.0", "Programa nacional de transformación digital para PyMEs industriales: el Estado cubre "
          "hasta el 50% del valor de kits de digitalización (ciberseguridad, IoT, impresión 3D). Requiere "
          "personas jurídicas con Certificado MiPyME — el registro ayuda a detectar a quiénes les conviene dar "
