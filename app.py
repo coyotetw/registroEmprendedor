@@ -1031,3 +1031,114 @@ with tab_metodologia:
         "del Árbol de Soluciones — por ejemplo, cuánta gente inscripta pertenece a los grupos "
         "prioritarios del punto 2.2 del Marco Metodológico."
     )
+
+    st.markdown("---")
+    st.markdown("#### Diagnóstico con datos reales: bases existentes en Chubut")
+    st.caption(
+        "Esto no es una simulación: se calcula sobre el cruce real de bases que ya existen en "
+        "Chubut (RPI, Sello de Origen, Raíz Emprendedora, Prestadores Turísticos, Directorio "
+        "Chubut). Subí el Excel unificado (hojas \"unificado_por_cuit\" y \"detalle_por_fuente\") "
+        "para verlo — el prototipo no tiene acceso directo a Drive, así que se carga a mano."
+    )
+
+    archivo_base_real = st.file_uploader(
+        "Base unificada (.xlsx)", type=["xlsx"], key="archivo_base_real"
+    )
+
+    if archivo_base_real is not None:
+        unificado = None
+        detalle = None
+        try:
+            unificado = pd.read_excel(archivo_base_real, sheet_name="unificado_por_cuit")
+            detalle = pd.read_excel(archivo_base_real, sheet_name="detalle_por_fuente")
+        except Exception as e:
+            st.error(f"No pude leer el archivo con las hojas esperadas ({e}).")
+
+        if unificado is not None and detalle is not None:
+            def normalizar_localidad(valor):
+                if pd.isna(valor):
+                    return None
+                partes = [p.strip().upper() for p in str(valor).split("|")]
+                partes = [p for p in partes if p and p not in ("SIN DATOS", "SIN DATO")]
+                if not partes:
+                    return None
+                principal = partes[0]
+                equivalencias = {"PTO. MADRYN": "PUERTO MADRYN", "PTO MADRYN": "PUERTO MADRYN"}
+                return equivalencias.get(principal, principal)
+
+            unificado["localidad_norm"] = unificado["Localidades"].apply(normalizar_localidad)
+
+            total_cuits = len(unificado)
+            con_localidad = int(unificado["localidad_norm"].notna().sum())
+            cuit_valido_pct = (
+                unificado["cuit_valido"].mean() * 100 if "cuit_valido" in unificado.columns else None
+            )
+            multi_fuente_pct = (
+                (unificado["cantidad_fuentes"] > 1).mean() * 100
+                if "cantidad_fuentes" in unificado.columns
+                else None
+            )
+
+            col1, col2, col3, col4 = st.columns(4)
+            col1.metric("CUIT únicos detectados", f"{total_cuits:,}".replace(",", "."))
+            col2.metric(
+                "Con localidad cargada",
+                f"{(con_localidad / total_cuits * 100):.0f}%" if total_cuits else "—",
+            )
+            col3.metric(
+                "Con CUIT válido (formato)",
+                f"{cuit_valido_pct:.0f}%" if cuit_valido_pct is not None else "—",
+            )
+            col4.metric(
+                "Aparece en más de 1 base",
+                f"{multi_fuente_pct:.0f}%" if multi_fuente_pct is not None else "—",
+            )
+
+            st.caption(
+                "Ese último número es el diagnóstico más relevante para la política pública: hoy "
+                "casi todos los registros viven en una sola base, sin cruce entre sí. Es "
+                "exactamente el problema central del Árbol de Problemas (\"falta de un registro "
+                "único y actualizado de emprendedores\") medido con datos reales, y la razón de "
+                "fondo para consolidar todo en un Registro Único en vez de sumar una planilla más."
+            )
+
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown("**Peso de cada base de origen**")
+                st.caption(
+                    "Cuántos registros aporta cada fuente, antes de unificar por CUIT "
+                    "(detalle_por_fuente)."
+                )
+                st.bar_chart(detalle["Fuente"].value_counts(), color="#0F7A73")
+            with col2:
+                st.markdown("**En cuántas bases aparece cada CUIT**")
+                st.caption(
+                    "1 = solo está en una base; 2 o más = ya fue cruzado manualmente entre bases."
+                )
+                st.bar_chart(
+                    unificado["cantidad_fuentes"].value_counts().sort_index(), color="#D9691D"
+                )
+
+            st.markdown("**Top localidades (sobre los CUIT con localidad cargada)**")
+            top_localidades = unificado["localidad_norm"].value_counts().head(15)
+            st.bar_chart(top_localidades, color="#211C16")
+            st.caption(
+                f"{(total_cuits - con_localidad):,}".replace(",", ".") + " de "
+                f"{total_cuits:,}".replace(",", ".") + " CUIT no tienen localidad cargada en "
+                "ninguna base de origen y quedan afuera de este gráfico. Cerrar ese vacío es uno "
+                "de los objetivos concretos del campo de localidad en la sección 3.1 del Registro."
+            )
+
+            st.caption(
+                "No se muestra un gráfico de rubros: cada base clasifica la actividad con un "
+                "criterio distinto (RPI por actividad económica, Turismo por tipo de prestador, y "
+                "en Raíz Emprendedora ese dato falta en la mayoría de los casos), así que "
+                "mezclarlos daría una lectura engañosa. El campo único de \"Rubros\" del Registro "
+                "(sección 3.1) es lo que permitiría, a futuro, tener ese gráfico de forma "
+                "confiable."
+            )
+    else:
+        st.caption(
+            "Sin archivo cargado todavía. Estos gráficos se arman en el momento a partir del "
+            "Excel que subas — nada queda guardado ni se sube a ningún lado."
+        )
