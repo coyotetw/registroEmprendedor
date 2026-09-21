@@ -370,7 +370,9 @@ RANGO_VENTAS = [
     "Entre $1.000.000 y $2.000.000", "Entre $2.000.000 y $5.000.000",
     "Más de $5.000.000",
 ]
-NIVEL_INVERSION = ["Baja", "Media", "Alta"]
+NIVEL_INVERSION = [
+    "Hasta $5.000.000", "De $5.000.000 a $20.000.000", "Más de $20.000.000",
+]
 NIVEL_ENDEUDAMIENTO = ["Nulo", "Bajo", "Medio", "Alto"]
 ETAPA_DESARROLLO = [
     "Idea o proyecto (aún sin actividad)",
@@ -548,7 +550,12 @@ with tab_inscripcion:
                 )
                 emision_facturas = st.selectbox("Emisión de facturas", ["Seleccionar..."] + EMISION_FACTURAS, key="emision_facturas")
             with col2:
-                acceso_regimenes = st.text_area("Acceso a regímenes", key="acceso_regimenes")
+                acceso_regimenes = st.text_area(
+                    "Acceso a regímenes",
+                    key="acceso_regimenes",
+                    placeholder="Ej.: Registro de Proveedores del Estado, Monotributo Social, "
+                    "Régimen de Promoción Industrial...",
+                )
 
             if ya_formalizado:
                 st.info(
@@ -913,8 +920,10 @@ with tab_metodologia:
         """
         Este registro no nace de un capricho de diseño: es uno de los **medios directos** del
         **Árbol de Soluciones** construido con la metodología de planificación del
-        **Consejo Federal de Inversiones (CFI)** para justificar la creación de una
-        **Dirección de Emprendedurismo** dentro del Ministerio de Producción del Chubut.
+        **Consejo Federal de Inversiones (CFI)**. El objetivo de fondo no es crear una Dirección
+        por crear una Dirección — es mejorar la formalización, la sostenibilidad y el acceso a
+        apoyo público de los emprendedores de Chubut. Una Dirección o Programa formal es uno de
+        los **medios** para lograrlo, no el fin en sí mismo.
         """
     )
 
@@ -924,20 +933,25 @@ with tab_metodologia:
             """
             <div class="callout">
                 <p class="section-eyebrow">Árbol de Problemas</p>
-                <p style="margin:0 0 8px 0;"><b>Problema central:</b> ausencia de una Dirección o
-                Programa formal de Emprendedurismo en el Ministerio de Producción de Chubut.</p>
+                <p style="margin:0 0 8px 0;"><b>Problema central:</b> los emprendedores
+                chubutenses tienen baja formalización, baja sostenibilidad en el tiempo y acceso
+                limitado y desarticulado al apoyo público disponible.</p>
                 <p style="margin:0 0 4px 0; font-size:0.88rem;"><b>Causas directas:</b></p>
                 <ul style="margin:0 0 8px 18px; font-size:0.88rem; color:var(--text-muted);">
-                    <li>Sin estructura orgánica ni presupuesto propio</li>
-                    <li>Falta de un Registro Único de Emprendedores provincial</li>
-                    <li>Sin líneas de financiamiento articuladas con el Banco del Chubut</li>
-                    <li>Iniciativas dispersas entre organismos, sin conducción unificada</li>
+                    <li>No existe un registro único que identifique quiénes son y dónde están
+                    los emprendedores de la provincia</li>
+                    <li>Los apoyos existentes (RPI, Sello Origen, Raíz Emprendedora, programas
+                    municipales y nacionales) funcionan de forma desarticulada, sin conducción
+                    unificada</li>
+                    <li>Barreras concretas para formalizarse: trámites percibidos como
+                    complejos, costos impositivos, falta de información</li>
+                    <li>Financiamiento poco adaptado a la etapa de cada emprendimiento (idea,
+                    puesta en marcha, consolidación)</li>
                 </ul>
                 <p style="margin:0; font-size:0.88rem; color:var(--text-muted);"><b>Efectos:</b>
-                Chubut rezagada frente a otras provincias y a la Secretaría PyME de la Nación en el
-                diseño de políticas de emprendedurismo; emprendedores sin financiamiento adaptado a
-                su etapa; menor incidencia en políticas nacionales; más informalidad y mortalidad
-                temprana de emprendimientos.</p>
+                mayor informalidad y mortalidad temprana de emprendimientos; emprendedores sin
+                protección social ni acceso sostenido a crédito; el Estado sin datos propios para
+                diseñar ni evaluar sus políticas de emprendedurismo.</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -947,23 +961,44 @@ with tab_metodologia:
             """
             <div class="callout">
                 <p class="section-eyebrow">Árbol de Soluciones</p>
-                <p style="margin:0 0 8px 0;"><b>Objetivo central:</b> crear una Dirección o Programa
-                de Emprendedurismo en el Ministerio de Producción de Chubut.</p>
+                <p style="margin:0 0 8px 0;"><b>Objetivo central:</b> los emprendedores
+                chubutenses logran mayor formalización, sostenibilidad en el tiempo y acceso
+                articulado al apoyo público disponible.</p>
                 <p style="margin:0 0 4px 0; font-size:0.88rem;"><b>Medios directos:</b></p>
                 <ul style="margin:0 0 8px 18px; font-size:0.88rem; color:var(--text-muted);">
-                    <li>Estructura orgánica y presupuesto propio</li>
-                    <li><b>Implementar un Registro Único de Emprendedores</b> (este prototipo)</li>
-                    <li>Líneas de financiamiento articuladas con el Banco del Chubut</li>
-                    <li>Unificar bajo una conducción provincial las iniciativas dispersas</li>
+                    <li><b>Implementar un Registro Único de Emprendedores</b> que identifique
+                    quiénes son y dónde están (este prototipo)</li>
+                    <li>Articular los apoyos existentes bajo una conducción unificada —
+                    aquí es donde entra una Dirección o Programa formal, como medio</li>
+                    <li>Reducir las barreras de formalización (información, trámites, costos)</li>
+                    <li>Adaptar el financiamiento a la etapa de cada emprendimiento</li>
                 </ul>
                 <p style="margin:0; font-size:0.88rem; color:var(--text-muted);"><b>Fines:</b>
-                Chubut activa frente a otras provincias y a la Secretaría PyME de la Nación en el
-                diseño de políticas de emprendedurismo; financiamiento adaptado a cada etapa; más
-                incidencia nacional; menor informalidad y mayor sostenibilidad.</p>
+                menor informalidad y mortalidad temprana de emprendimientos; más emprendedores
+                con protección social y acceso sostenido a crédito; el Estado diseña y evalúa sus
+                políticas con datos propios y actualizados.</p>
             </div>
             """,
             unsafe_allow_html=True,
         )
+
+    st.markdown(
+        """
+        <div class="callout" style="margin-top:14px;">
+            <p class="section-eyebrow">Sobre los indicadores y la línea de base</p>
+            <p style="margin:0; font-size:0.88rem; color:var(--text-muted);">Hoy no hay una
+            fuente consolidada de informalidad, mortalidad temprana o cantidad total de
+            emprendedores a nivel provincial — es justamente el vacío de información que describe
+            el problema central. Mientras esa fuente no exista, el propio Registro (una vez en
+            producción, no la demo de sesión) es la forma más directa de construir esa línea de
+            base: cuántos son, dónde están, en qué etapa y qué tan formalizados, medido en el
+            tiempo. Eso también obliga a definir de entrada qué condiciones concretas de esos
+            emprendedores se busca mejorar, para que las acciones del Árbol de Soluciones apunten
+            a esas condiciones y no queden como una declaración de intenciones.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     st.markdown(
         """
@@ -1106,10 +1141,11 @@ with tab_metodologia:
 
             st.caption(
                 "Ese último número es el diagnóstico más relevante para la política pública: hoy "
-                "casi todos los registros viven en una sola base, sin cruce entre sí. Es "
-                "exactamente el problema central del Árbol de Problemas (\"falta de un registro "
-                "único y actualizado de emprendedores\") medido con datos reales, y la razón de "
-                "fondo para consolidar todo en un Registro Único en vez de sumar una planilla más."
+                "casi todos los registros viven en una sola base, sin cruce entre sí. Es la "
+                "evidencia concreta de una de las causas directas del Árbol de Problemas "
+                "(\"no existe un registro único que identifique quiénes son y dónde están los "
+                "emprendedores de la provincia\"), medida con datos reales, y la razón de fondo "
+                "para consolidar todo en un Registro Único en vez de sumar una planilla más."
             )
 
             col1, col2 = st.columns(2)
