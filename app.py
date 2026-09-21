@@ -210,15 +210,129 @@ st.markdown(
             font-family: var(--font-body);
         }
         [data-testid="stCaptionContainer"] { color: var(--text-muted); }
+        [data-testid="stWidgetLabel"] p, [data-testid="stWidgetLabel"] label {
+            color: var(--text) !important;
+        }
 
-        .stTextInput input, .stTextArea textarea, .stNumberInput input,
-        .stDateInput input, div[data-baseweb="select"] > div {
+        /* Forzar look claro en TODOS los controles de formulario, sin depender de
+           que .streamlit/config.toml viaje junto al archivo (si el navegador/SO
+           está en modo oscuro, Streamlit inyecta su propio tema oscuro en estos
+           widgets salvo que lo pisemos acá explícitamente). Selectores verificados
+           contra el DOM real que arma Streamlit (react-aria + data-testid), no
+           basados en BaseWeb (esta versión de Streamlit ya no lo usa). */
+        .stTextInput input, .stTextArea textarea, .stNumberInput input {
+            background-color: var(--surface) !important;
+            color: var(--text) !important;
             border-radius: 7px !important;
             border-color: var(--border) !important;
+        }
+        .stTextInput input::placeholder, .stTextArea textarea::placeholder,
+        .stNumberInput input::placeholder {
+            color: var(--text-muted) !important;
+            opacity: 1 !important;
         }
         .stTextInput input:focus, .stTextArea textarea:focus, .stNumberInput input:focus {
             border-color: var(--accent) !important;
             box-shadow: 0 0 0 1px var(--accent) !important;
+        }
+        /* Selector de fecha (react-aria DateField: spans, no <input>) */
+        [data-testid="stDateInputField"] {
+            background-color: var(--surface) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 7px !important;
+        }
+        [data-testid="stDateInputField"] span {
+            color: var(--text) !important;
+            background-color: transparent !important;
+        }
+        /* Select / Multiselect (react-aria ComboBox): el <input role="combobox">
+           y el grupo que lo envuelve */
+        [data-testid="stSelectbox"] [role="group"],
+        [data-testid="stMultiSelect"] [role="group"],
+        [data-testid="stMultiSelectTagsContainer"] {
+            background-color: var(--surface) !important;
+            border-color: var(--border) !important;
+        }
+        [data-testid="stSelectbox"] input[role="combobox"],
+        [data-testid="stMultiSelect"] input[role="combobox"] {
+            background-color: transparent !important;
+            color: var(--text) !important;
+        }
+        [data-testid="stSelectbox"] input[role="combobox"]::placeholder,
+        [data-testid="stMultiSelect"] input[role="combobox"]::placeholder {
+            color: var(--text-muted) !important;
+            opacity: 1 !important;
+        }
+        /* Chips del multiselect (rubros, etc.) */
+        [data-testid="stMultiSelectTagsContainer"] > span,
+        [data-testid="stMultiSelectTagsContainer"] [data-rac] {
+            background-color: var(--accent-soft) !important;
+            color: var(--accent-dark) !important;
+        }
+        /* Menú desplegable (popover) de selects y multiselects: Streamlit lo monta
+           con su propio testid y, sin config.toml, usa su tema oscuro por defecto
+           (rgb(14,17,23)) salvo que lo pisemos acá. */
+        [data-testid="stSelectboxVirtualDropdown"],
+        [data-testid$="VirtualDropdown"],
+        div[role="listbox"] {
+            background-color: var(--surface) !important;
+            color: var(--text) !important;
+        }
+        div[role="listbox"] [role="option"] {
+            background-color: var(--surface) !important;
+            color: var(--text) !important;
+        }
+        div[role="listbox"] [role="option"][data-focused="true"],
+        div[role="listbox"] [role="option"][aria-selected="true"],
+        div[role="listbox"] [role="option"]:hover {
+            background-color: var(--surface-tint) !important;
+        }
+        /* Recuadros de st.info / st.warning / st.success / st.error */
+        div[data-testid="stAlert"] {
+            background-color: var(--surface-tint) !important;
+            color: var(--text) !important;
+        }
+        div[data-testid="stAlert"] p { color: var(--text) !important; }
+        /* st.metric */
+        [data-testid="stMetric"] {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+        }
+        [data-testid="stMetricLabel"] { color: var(--text-muted) !important; }
+        [data-testid="stMetricValue"] { color: var(--text) !important; }
+        /* Expanders */
+        div[data-testid="stExpander"] {
+            background-color: var(--surface) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 10px !important;
+        }
+        div[data-testid="stExpander"] summary { color: var(--text) !important; }
+        /* File uploader */
+        [data-testid="stFileUploaderDropzone"] {
+            background-color: var(--surface) !important;
+            border: 1px dashed var(--border) !important;
+        }
+        [data-testid="stFileUploaderDropzone"] * { color: var(--text) !important; }
+        /* Botón "Browse files" y cualquier otro botón secundario (usa un
+           componente distinto al de los botones primarios de arriba) */
+        [data-testid="stBaseButton-secondary"] {
+            background-color: var(--surface) !important;
+            color: var(--text) !important;
+            border: 1px solid var(--border) !important;
+        }
+        [data-testid="stBaseButton-secondary"] *,
+        [data-testid="stBaseButton-secondary"] [data-testid="stIconMaterial"] {
+            color: var(--text) !important;
+        }
+        [data-testid="stBaseButton-secondary"]:hover {
+            background-color: var(--surface-tint) !important;
+            border-color: var(--accent) !important;
+        }
+        /* Tabla / dataframe */
+        [data-testid="stDataFrame"], [data-testid="stTable"] {
+            background-color: var(--surface) !important;
         }
 
         /* ---------- Botones ---------- */
