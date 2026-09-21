@@ -1139,14 +1139,43 @@ with tab_metodologia:
                 "de los objetivos concretos del campo de localidad en la sección 3.1 del Registro."
             )
 
+            st.markdown("**Actividades / rubros, base por base**")
             st.caption(
-                "No se muestra un gráfico de rubros: cada base clasifica la actividad con un "
-                "criterio distinto (RPI por actividad económica, Turismo por tipo de prestador, y "
-                "en Raíz Emprendedora ese dato falta en la mayoría de los casos), así que "
-                "mezclarlos daría una lectura engañosa. El campo único de \"Rubros\" del Registro "
-                "(sección 3.1) es lo que permitiría, a futuro, tener ese gráfico de forma "
-                "confiable."
+                "Cada fuente clasifica la actividad con un criterio propio (RPI por actividad "
+                "económica, Turismo por tipo de prestador, Sello por rubro artesanal/productivo, "
+                "Raíz Emprendedora con código AFIP cuando está cargado). Mezclarlas en un solo "
+                "gráfico daría una lectura engañosa, así que se ve una fuente a la vez — elegí "
+                "cuál mirar."
             )
+
+            def categoria_amplia(valor):
+                if isinstance(valor, str) and "»" in valor:
+                    return valor.split("»")[-1].strip()
+                return valor
+
+            fuente_elegida = st.selectbox(
+                "Fuente a analizar", sorted(detalle["Fuente"].dropna().unique()), key="fuente_rubro"
+            )
+            rubros_fuente = detalle.loc[detalle["Fuente"] == fuente_elegida, "Rubro"].dropna()
+            rubros_fuente = rubros_fuente[rubros_fuente != "Consolidado 202604"]
+            total_fuente = int((detalle["Fuente"] == fuente_elegida).sum())
+
+            if rubros_fuente.empty:
+                st.info(
+                    f"\"{fuente_elegida}\" no tiene el campo de rubro/actividad cargado en esta "
+                    "base."
+                )
+            else:
+                st.bar_chart(
+                    rubros_fuente.apply(categoria_amplia).value_counts().head(12), color="#0F7A73"
+                )
+                st.caption(
+                    f"{len(rubros_fuente):,}".replace(",", ".") + " de "
+                    f"{total_fuente:,}".replace(",", ".") +
+                    " registros de esta fuente tienen rubro/actividad cargado (se excluyen los "
+                    "que no lo tienen). El campo único de \"Rubros\" del Registro (sección 3.1) es "
+                    "lo que permitiría, a futuro, comparar esto de forma confiable entre fuentes."
+                )
     else:
         st.caption(
             "Sin archivo cargado todavía. Estos gráficos se arman en el momento a partir del "
