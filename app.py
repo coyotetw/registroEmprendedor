@@ -1176,6 +1176,73 @@ with tab_metodologia:
                     "que no lo tienen). El campo único de \"Rubros\" del Registro (sección 3.1) es "
                     "lo que permitiría, a futuro, comparar esto de forma confiable entre fuentes."
                 )
+
+            st.markdown("**Completitud de contacto, por fuente**")
+            st.caption("Qué porcentaje de los registros de cada fuente tiene teléfono y mail cargado.")
+            completitud = detalle.groupby("Fuente").agg(
+                registros=("Fuente", "size"),
+                con_telefono=("Telefono", lambda s: s.notna().mean() * 100),
+                con_mail=("Mail", lambda s: s.notna().mean() * 100),
+            ).round(1)
+            completitud.columns = ["Registros", "% con teléfono", "% con mail"]
+            st.dataframe(completitud, use_container_width=True)
+            st.caption(
+                "Si una fuente aparece en 0% en ambas columnas, en este archivo no se incluyeron "
+                "esos campos para esa fuente — no implica necesariamente que el programa de "
+                "origen no los recolecte, vale confirmarlo con quien armó el cruce."
+            )
+
+            st.markdown("**Seguimiento de estado (vigente / baja), por fuente**")
+            st.caption(
+                "Cuántos registros de cada fuente tienen un estado (vigente, baja, etc.) cargado — "
+                "es decir, en cuáles se puede saber si el emprendimiento sigue activo."
+            )
+            estado_por_fuente = detalle.groupby("Fuente")["Estado"].apply(lambda s: s.notna().sum())
+            estado_por_fuente = estado_por_fuente.rename("Registros con estado cargado").to_frame()
+            estado_por_fuente["Total de la fuente"] = detalle.groupby("Fuente").size()
+            st.dataframe(estado_por_fuente, use_container_width=True)
+
+            st.markdown("---")
+            st.markdown("**Explorador de la base cruda**")
+            st.caption(
+                "Para mirar el detalle vos mismo: filtrá por fuente y/o localidad y explorá la "
+                "tabla completa (antes de unificar por CUIT). También la podés descargar filtrada."
+            )
+            col1, col2 = st.columns(2)
+            with col1:
+                fuentes_filtro = st.multiselect(
+                    "Filtrar por fuente",
+                    sorted(detalle["Fuente"].dropna().unique()),
+                    key="explorador_fuentes",
+                )
+            with col2:
+                localidades_filtro = st.multiselect(
+                    "Filtrar por localidad",
+                    sorted(detalle["Localidad"].dropna().unique()),
+                    key="explorador_localidades",
+                )
+
+            detalle_filtrado = detalle.copy()
+            if fuentes_filtro:
+                detalle_filtrado = detalle_filtrado[detalle_filtrado["Fuente"].isin(fuentes_filtro)]
+            if localidades_filtro:
+                detalle_filtrado = detalle_filtrado[
+                    detalle_filtrado["Localidad"].isin(localidades_filtro)
+                ]
+
+            st.caption(f"{len(detalle_filtrado):,}".replace(",", ".") + " registros con este filtro.")
+            st.dataframe(detalle_filtrado, use_container_width=True, height=350)
+
+            buffer_detalle = io.BytesIO()
+            with pd.ExcelWriter(buffer_detalle, engine="openpyxl") as writer:
+                detalle_filtrado.to_excel(writer, index=False, sheet_name="detalle_filtrado")
+                unificado.to_excel(writer, index=False, sheet_name="unificado_por_cuit")
+            st.download_button(
+                "Descargar esta vista (Excel)",
+                data=buffer_detalle.getvalue(),
+                file_name="diagnostico_bases_chubut_filtrado.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            )
     else:
         st.caption(
             "Sin archivo cargado todavía. Estos gráficos se arman en el momento a partir del "
