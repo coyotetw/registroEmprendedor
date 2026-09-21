@@ -195,7 +195,7 @@ st.markdown(
             div[data-testid="stForm"] { padding: 16px 14px; }
             .kv-grid { grid-template-columns: 1fr; }
             .program-row { flex-direction: column; gap: 4px; }
-            .program-title { min-width: 0; }
+            .program-title { flex-basis: auto; }
             .scroll-hint { display: block; }
         }
 
@@ -299,15 +299,25 @@ st.markdown(
 
         .program-row {
             display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            gap: 18px;
+            align-items: flex-start;
+            gap: 24px;
             padding: 14px 2px;
             border-bottom: 1px solid var(--border);
         }
         .program-row:last-child { border-bottom: none; }
-        .program-title { font-family: var(--font-display); font-weight: 600; font-size: 0.98rem; min-width: 260px; }
-        .program-desc { color: var(--text-muted); font-size: 0.88rem; }
+        .program-title {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.98rem;
+            flex: 0 0 220px;
+            text-align: left;
+        }
+        .program-desc {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            flex: 1 1 auto;
+            text-align: left;
+        }
 
         [data-testid="stDataFrame"] { font-family: var(--font-body); }
     </style>
